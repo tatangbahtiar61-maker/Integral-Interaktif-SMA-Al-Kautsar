@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="id" data-view="pc">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integral Interaktif - SMA Al Kautsar</title>
+
+<!-- MathJax v3 -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    },
+    svg: { fontCache: 'global' },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root { --ink:#1a1011; --paper:#fbf6ec; --teal:#8b1a1a; --amber:#a67c00; --line:#e6d9c3; }
+  html { scroll-behavior: smooth; }
+  body { font-family:'Source Sans 3', system-ui, sans-serif; background:var(--paper); color:var(--ink); font-size:17px; line-height:1.7; }
+  h1,h2,h3,h4,.display { font-family:'Bricolage Grotesque', system-ui, sans-serif; letter-spacing:-0.01em; }
+  .hero { position:relative; background-color:#04050c;
+    background-image:radial-gradient(ellipse at 12% 15%, rgba(122,22,22,.55), transparent 55%), radial-gradient(ellipse at 88% 85%, rgba(70,24,90,.40), transparent 60%), radial-gradient(ellipse at 60% 10%, rgba(212,160,23,.10), transparent 45%);
+    border-bottom:4px solid #d4a017; }
+  .hero > canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .hero .wrap { position:relative; }
+  .gold-text { color:#f5d36b; }
+  .site-footer { background:#140b0c; color:#e9d9a8; border-top:4px solid #d4a017; margin-top:2rem; padding:1.5rem 0; text-align:center; font-size:.9rem; }
+  .site-footer .ft-title { color:#f5d36b; font-weight:700; font-size:1.05rem; }
+  .ans-pad { display:none; grid-template-columns:repeat(4,1fr); gap:.45rem; max-width:270px; margin-top:.6rem; }
+  html[data-view="mobile"] .ans-pad { display:grid; max-width:100%; }
+  .ans-pad.force { display:grid; } .ans-pad.hide { display:none !important; }
+  .ans-key { padding:.75rem 0; border-radius:.6rem; border:1px solid var(--line); background:#fff; font-weight:700; font-size:1.2rem; touch-action:manipulation; user-select:none; }
+  .ans-key:active { background:#f3e6c9; }
+  .ans-key.op { background:#fff3c4; } .ans-key.ok { background:var(--teal); color:#f5d36b; border-color:var(--teal); }
+  .c-ok { background:#e4f4e8; border-color:#9fd3ad; } .c-bad { background:#fbe0e0; border-color:#e1a0a0; }
+  .tabbtn { padding:.7rem 1.1rem; font-weight:600; border-bottom:3px solid transparent; color:#6b5a5a; white-space:nowrap; }
+  .tabbtn:hover { color:var(--ink); }
+  .tabbtn.active { color:var(--teal); border-bottom-color:#d4a017; }
+  .card { border-radius:.75rem; padding:1rem 1.25rem; margin:1rem 0; border:1px solid var(--line); }
+  .card h4 { font-weight:700; margin-bottom:.4rem; font-size:1.05rem; }
+  .c-def { background:#faf1e4; border-color:#e3cfae; }
+  .c-rumus { background:#fff3c4; border-color:#e8c75a; }
+  .c-contoh { background:#fbe9e7; border-color:#e5b5ad; }
+  .c-catatan { background:#ececec; border-color:#c9c4c4; }
+  .card ul { list-style:disc; padding-left:1.4rem; }
+  .card ol { list-style:decimal; padding-left:1.4rem; }
+  .card li { margin:.2rem 0; }
+  .tbl { width:100%; border-collapse:collapse; margin:.5rem 0; }
+  .tbl th, .tbl td { border:1px solid var(--line); padding:.5rem .7rem; text-align:left; vertical-align:top; }
+  .tbl th { background:#f5e9c8; }
+  .scroll-x { overflow-x:auto; max-width:100%; }
+  mjx-container svg { display:inline; }
+  mjx-container[display="true"] { max-width:100%; overflow-x:auto; overflow-y:hidden; }
+  .sec { display:none; } .sec.show { display:block; }
+  .tabpane { display:none; } .tabpane.show { display:block; }
+  .tocbtn { display:block; width:100%; text-align:left; padding:.55rem .8rem; border-radius:.5rem; font-weight:600; color:#4a3536; }
+  .tocbtn:hover { background:#f3e6c9; }
+  .tocbtn.active { background:var(--ink); color:#f5d36b; }
+  .badge { display:inline-block; padding:.1rem .7rem; border-radius:999px; font-size:.85rem; font-weight:700; }
+  .b-mudah { background:#d9f5e3; color:#116a3a; }
+  .b-sedang { background:#fde8c4; color:#8a4b06; }
+  .b-sulit { background:#fbd5d5; color:#9b1c1c; }
+  .acc { display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s ease; }
+  .acc.open { grid-template-rows:1fr; }
+  .acc > div { overflow:hidden; min-height:0; }
+  .btn { background:var(--ink); color:#f5d36b; padding:.55rem 1rem; border-radius:.55rem; font-weight:600; }
+  .btn:hover { background:#4a1d1d; }
+  .btn:disabled { opacity:.4; cursor:not-allowed; }
+  .btn-teal { background:var(--teal); } .btn-teal:hover { background:#6b1414; }
+  .filterbtn { padding:.4rem 1rem; border-radius:999px; border:1px solid var(--line); background:#fff; font-weight:600; }
+  .kzopt { display:block; width:100%; text-align:left; padding:.7rem 1rem; border:1px solid var(--line); border-radius:.6rem; background:#fff; }
+  .kzopt:hover:not(:disabled) { background:#eef4ff; border-color:#e0b84a; }
+  .kzopt.ok { background:#d9f5e3; border-color:#2f9e5f; }
+  .kzopt.bad { background:#fbd5d5; border-color:#c53030; }
+  .tchip { display:inline-block; padding:.1rem .7rem; border-radius:999px; font-size:.85rem; font-weight:600; background:#f3e6c9; color:#4a1d1d; }
+  .filterbtn.active { background:var(--ink); color:#f5d36b; border-color:var(--ink); }
+  .slidebox { background:#fff; border:1px solid var(--line); border-radius:1rem; min-height:440px; }
+  .bigformula { background:#1a1011; color:#f5d36b; border-radius:.75rem; padding:1rem; font-size:1.35rem; overflow-x:auto; text-align:center; }
+  .visual { background:#fbf3df; border:2px dashed #d9b84a; border-radius:.75rem; padding:.8rem; }
+  .ex-panel { display:none; } .ex-panel.show { display:block; }
+  .exbtn { padding:.35rem .95rem; border-radius:999px; border:1px solid #d9b84a; background:#fff; font-weight:600; color:#7f1d1d; }
+  .exbtn.active { background:#7f1d1d; color:#fff; border-color:#7f1d1d; }
+  @media print { .ex-panel { display:block !important; margin-top:1rem; } }
+  .fig { background:#fff; border:1px solid var(--line); border-radius:.6rem; padding:.5rem; margin:0; }
+  .fig > svg, .fig > div > svg { display:block; width:100%; height:auto; font-family:'Source Sans 3', sans-serif; }
+  .fig figcaption mjx-container { overflow-x:auto; }
+  .wrap { max-width:72rem; margin-left:auto; margin-right:auto; padding-left:1rem; padding-right:1rem; }
+  .split { display:grid; gap:1.5rem; grid-template-columns:250px minmax(0,1fr); }
+  .cols2 { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
+  .pad { padding:1.75rem; }
+  .h-title { font-size:3rem; line-height:1.1; }
+  .only-mobile { display:none; } .only-pc { display:block; }
+  .logo-badge { width:76px; height:76px; object-fit:contain; background:#fff; border-radius:50%; padding:6px; flex:none; }
+  html[data-view="mobile"] .wrap { max-width:430px; }
+  html[data-view="mobile"] .split, html[data-view="mobile"] .cols2 { grid-template-columns:minmax(0,1fr); }
+  html[data-view="mobile"] .pad { padding:1.1rem; }
+  html[data-view="mobile"] .h-title { font-size:1.75rem; }
+  html[data-view="mobile"] .only-mobile { display:block; }
+  html[data-view="mobile"] .only-pc { display:none; }
+  html[data-view="mobile"] .logo-badge { width:56px; height:56px; }
+  html[data-view="mobile"] body { font-size:16px; }
+  html[data-force="pc"] body { min-width:1024px; }
+  #watermark { position:fixed; inset:0; pointer-events:none; z-index:10; overflow:hidden; }
+  #watermark .tile { position:absolute; inset:-50%; transform:rotate(-24deg); opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='380' height='150'%3E%3Ctext x='10' y='85' font-family='Arial,sans-serif' font-size='26' font-weight='700' fill='%237f1d1d'%3EUnggul %E2%80%A2 Islami %E2%80%A2 Global%3C/text%3E%3C/svg%3E"); }
+  #watermark .center { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; opacity:.055; width:max-content; max-width:90vw; }
+  #watermark .center img { width:min(55vw,360px); height:auto; margin:0 auto; display:block; }
+  #watermark .center p { font-family:'Bricolage Grotesque', system-ui, sans-serif; font-weight:800; font-size:clamp(1.1rem,4vw,2.2rem); margin-top:.5rem; }
+  :focus-visible { outline:3px solid #d4a017; outline-offset:2px; }
+  @media print {
+    .no-print, header, #tabbar { display:none !important; }
+    #tab2, #tab3 { display:none !important; }
+    body { background:#fff; font-size:12pt; }
+    body.print-all #tab1 { display:block !important; }
+    body.print-all .sec { display:block !important; page-break-inside:avoid; margin-bottom:1.5rem; }
+    #sidebar { display:none !important; }
+    .card { break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div id="watermark" aria-hidden="true">
+  <div class="tile"></div>
+  <div class="center"><img class="js-logo" alt="" style="visibility:hidden"><p>Unggul &bull; Islami &bull; Global</p></div>
+</div>
+
+<header class="hero text-white">
+  <canvas id="starCanvas" aria-hidden="true"></canvas>
+  <div class="wrap py-8">
+    <div class="flex justify-end no-print relative">
+      <button id="viewBtn" class="border border-white/40 rounded-lg px-3 py-1.5 text-sm font-semibold hover:bg-white/10" aria-haspopup="true" aria-expanded="false">Tampilan: <span id="viewLabel">Otomatis</span></button>
+      <div id="viewPanel" class="hidden absolute right-0 top-full mt-2 w-64 bg-white text-slate-800 rounded-xl shadow-lg p-3 z-30">
+        <p class="font-bold mb-1">Mode tampilan</p>
+        <label class="flex items-center gap-2 py-1 cursor-pointer"><input type="radio" name="viewMode" value="auto" checked> Otomatis (sesuai perangkat)</label>
+        <label class="flex items-center gap-2 py-1 cursor-pointer"><input type="radio" name="viewMode" value="mobile"> Mobile (HP)</label>
+        <label class="flex items-center gap-2 py-1 cursor-pointer"><input type="radio" name="viewMode" value="pc"> PC (laptop / komputer)</label>
+        <p id="viewHint" class="text-sm text-slate-500 mt-1"></p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mt-2">
+      <img class="js-logo logo-badge" alt="Logo SMA Al Kautsar" style="visibility:hidden">
+      <div>
+        <p class="gold-text font-semibold">SMA S Al Kautsar Bandar Lampung</p>
+        <h1 class="display h-title font-extrabold mt-1">Pembelajaran Interaktif<br><span class="gold-text">Integral Aljabar &amp; Trigonometri</span></h1>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="tabbar" class="bg-white border-b border-slate-200 sticky top-0 z-20">
+  <nav class="wrap flex overflow-x-auto" role="tablist">
+    <button class="tabbtn active" data-tab="tab1" role="tab">Modul Ajar</button>
+    <button class="tabbtn" data-tab="tab2" role="tab">Slide Presentasi</button>
+    <button class="tabbtn" data-tab="tab3" role="tab">Bank Soal &amp; Kuis</button>
+  </nav>
+</div>
+
+<main class="wrap py-6">
+
+  <!-- TAB 1 -->
+  <section id="tab1" class="tabpane show">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 no-print">
+      <h2 class="display text-2xl font-bold">Modul Ajar Lengkap</h2>
+      <button class="btn btn-teal" onclick="printModul()">Cetak Modul</button>
+    </div>
+    <div class="only-mobile mb-4 no-print">
+      <label for="tocSelect" class="font-semibold block mb-1">Pilih subbab</label>
+      <select id="tocSelect" class="w-full border border-slate-300 rounded-lg p-2 bg-white"></select>
+    </div>
+    <div class="split">
+      <aside id="sidebar" class="only-pc">
+        <div class="sticky top-16 bg-white border border-slate-200 rounded-xl p-2" id="toc"></div>
+      </aside>
+      <div id="modulContent" class="bg-white border border-slate-200 rounded-xl pad min-w-0"></div>
+    </div>
+  </section>
+
+  <!-- TAB 2 -->
+  <section id="tab2" class="tabpane">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+      <h2 class="display text-2xl font-bold">Slide Presentasi Interaktif</h2>
+      <span id="slideCounter" class="font-bold bg-white border border-slate-200 rounded-full px-4 py-1">Slide 1 / 11</span>
+    </div>
+    <div id="slideBox" class="slidebox pad"></div>
+    <div class="flex items-center justify-between gap-3 mt-4">
+      <button id="prevBtn" class="btn" onclick="goSlide(-1)">Sebelumnya (Prev)</button>
+      <p class="text-sm text-slate-500 only-pc">Tip: gunakan tombol panah kiri / kanan di keyboard</p>
+      <button id="nextBtn" class="btn btn-teal" onclick="goSlide(1)">Selanjutnya (Next)</button>
+    </div>
+  </section>
+
+  <!-- TAB 3 -->
+  <section id="tab3" class="tabpane">
+    <div class="flex flex-wrap gap-2 mb-5" id="modeBar"><button class="filterbtn active" data-m="bank">Bank Soal</button><button class="filterbtn" data-m="kuis">Kuis Pilihan Ganda</button></div>
+    <div id="bankPane">
+    <h2 class="display text-2xl font-bold mb-1">Bank Soal Latihan Bertingkat</h2>
+    <p class="mb-4 text-slate-600">Pilih soal berdasarkan tingkat kesulitan, materi, atau gabungan keduanya (atau coba Kuis Pilihan Ganda). Kerjakan dulu di kertas, baru buka kunci jawaban untuk mencocokkan langkahmu.</p>
+    <div class="mb-5 space-y-3">
+      <div><p class="font-semibold mb-1">Tingkat kesulitan</p><div class="flex flex-wrap gap-2" id="filters"></div></div>
+      <div><p class="font-semibold mb-1">Materi</p><div class="flex flex-wrap gap-2" id="topicFilters"></div></div>
+    </div>
+    <div id="soalList" class="space-y-5"></div>
+    </div>
+    <div id="kuisPane" style="display:none">
+      <h2 class="display text-2xl font-bold mb-1">Kuis Pilihan Ganda</h2>
+      <p class="mb-4 text-slate-600">Pilih materi, lalu jawab soal satu per satu. Jawaban langsung dibahas dan skor ditampilkan di akhir.</p>
+      <div class="flex flex-wrap items-center gap-2 mb-4"><label for="kzTopic" class="font-semibold">Materi:</label><select id="kzTopic" class="border border-slate-300 rounded-lg px-2 py-1.5 bg-white"></select><button class="btn btn-teal" onclick="kzStart()">Mulai Kuis</button></div>
+      <div id="kzBox" class="bg-white border border-slate-200 rounded-xl pad"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap flex flex-col items-center gap-1">
+    <img class="js-logo" alt="Logo SMA Al Kautsar" style="visibility:hidden;height:56px;width:56px;object-fit:contain">
+    <p class="ft-title">SMA S Al Kautsar Bandar Lampung</p>
+    <p>Unggul &bull; Islami &bull; Global</p>
+    <p>&copy; <span id="year">2026</span> SMA S Al Kautsar Bandar Lampung. Hak cipta dilindungi undang-undang.</p>
+    <p>Materi pembelajaran interaktif: Integral Aljabar dan Trigonometri.</p>
+  </div>
+</footer>
+
+<script>
+/* ---------- Util ---------- */
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) {
+    return MathJax.typesetPromise(el ? [el] : undefined).catch(function (e) { console.error(e); });
+  }
+}
+var card = function (cls, title, body) {
+  return '<div class="card ' + cls + '"><h4>' + title + '</h4>' + body + '</div>';
+};
+
+/* ---------- DATA MODUL (6 subbab) ---------- */
+var MODUL = [
+{ id: 's0', title: '1. Antiderivatif (Antiturunan)', html:
+  '<h3 class="text-2xl font-bold mb-2">1. Antiderivatif (Antiturunan)</h3>' +
+  card('c-def', 'Konsep', String.raw`<p>Pada turunan, kita mengubah $F(x)$ menjadi $F'(x)$. <b>Antiderivatif</b> adalah proses kebalikannya: diberikan $f(x)$, kita mencari fungsi $F(x)$ yang turunannya adalah $f(x)$.</p>$$F'(x)=f(x)\ \Longrightarrow\ F(x)\ \text{adalah antiderivatif dari}\ f(x)$$<p>Contoh: turunan $x^3$ adalah $3x^2$, sehingga $x^3$ adalah antiderivatif dari $3x^2$. Fungsi $x^3+5$ dan $x^3-2$ juga bila diturunkan menghasilkan $3x^2$, jadi antiderivatif suatu fungsi <b>tidak tunggal</b>.</p>`) +
+  card('c-rumus', 'Antiderivatif Umum', String.raw`<p>Karena turunan konstanta sama dengan nol, semua antiderivatif dari $f(x)$ hanya berbeda pada konstanta:</p>$$F(x)+C,\quad C\ \text{konstanta real}$$<p>Secara grafik, antiderivatif-antiderivatif itu membentuk keluarga kurva yang sama bentuknya dan hanya bergeser naik-turun.</p>`) +
+  card('c-def', 'Visualisasi: Keluarga Antiderivatif', '<p>Antiderivatif dari $f(x)=2x$ adalah $F(x)=x^2+C$. Geser nilai $C$: kurva bergeser vertikal, tetapi garis singgung di $x=1$ (garis oranye) selalu sejajar karena gradiennya tetap $f(1)=2$.</p>' +
+    '<label for="cSlider" class="font-semibold block no-print">Nilai C = <span id="cVal">0</span></label>' +
+    '<input id="cSlider" type="range" min="-3" max="3" step="1" value="0" class="w-full no-print">' +
+    '<div class="fig mt-2" id="cViz"></div><p id="cInfo" class="font-semibold mt-2"></p>') +
+  card('c-rumus', 'Rumus Dasar dan Cara Menemukannya', String.raw`<div class="scroll-x"><table class="tbl"><thead><tr><th>$f(x)$</th><th>Antiderivatif umum $F(x)+C$</th></tr></thead><tbody>
+  <tr><td>$k$ (konstanta)</td><td>$kx+C$</td></tr>
+  <tr><td>$x$</td><td>$\dfrac{x^2}{2}+C$</td></tr>
+  <tr><td>$x^n,\ n\neq -1$</td><td>$\dfrac{x^{n+1}}{n+1}+C$</td></tr>
+  <tr><td>$a\,x^n$</td><td>$\dfrac{a}{n+1}x^{n+1}+C$</td></tr>
+  </tbody></table></div><ol><li>Tanyakan: fungsi apa yang bila diturunkan menghasilkan $f(x)$?</li><li>Naikkan pangkat sebesar 1, lalu bagi dengan pangkat yang baru.</li><li>Tambahkan $C$.</li><li>Periksa dengan menurunkan hasilnya.</li></ol>`) +
+  card('c-catatan', 'Menuju Integral', String.raw`<p>Antiderivatif umum dituliskan dengan lambang integral: $\int f(x)\,dx=F(x)+C$. Notasi, sifat, dan teknik pengintegralannya dibahas pada subbab berikutnya.</p>`) +
+  card('c-contoh', 'Contoh Soal &amp; Pembahasan', String.raw`<p><b>Soal:</b> Tentukan antiderivatif umum dari $f(x)=4x^3-3x^2+2$.</p><p><b>Pembahasan:</b></p><ol><li>Antiderivatifkan suku demi suku: $$F(x)=4\cdot\frac{x^4}{4}-3\cdot\frac{x^3}{3}+2x+C$$</li><li>Sederhanakan: $$F(x)=x^4-x^3+2x+C$$</li><li>Cek: $F'(x)=4x^3-3x^2+2=f(x)$ (sesuai).</li></ol>`)
+},
+{ id: 's1', title: '2. Integral Tak Tentu', html:
+  '<h3 class="text-2xl font-bold mb-2">2. Integral Tak Tentu</h3>' +
+  card('c-def', 'Definisi', String.raw`<p>Integral adalah kebalikan dari turunan. Fungsi $F(x)$ disebut <b>antiturunan</b> dari $f(x)$ jika $F'(x)=f(x)$. Karena turunan konstanta sama dengan nol, antiturunan selalu memuat konstanta sembarang $C$.</p>`) +
+  card('c-def', 'Notasi', String.raw`$$\int f(x)\,dx = F(x) + C$$<ul><li>$\int$ : lambang integral</li><li>$f(x)$ : integran (fungsi yang diintegralkan)</li><li>$dx$ : menyatakan variabelnya adalah $x$</li><li>$C$ : konstanta integrasi</li></ul>`) +
+  card('c-rumus', 'Rumus Utama', String.raw`$$\int x^n\,dx=\frac{1}{n+1}x^{n+1}+C,\quad n\neq -1$$$$\int a\,x^n\,dx=\frac{a}{n+1}x^{n+1}+C$$$$\int k\,dx = kx + C$$$$\int (ax+b)^n\,dx=\frac{1}{a(n+1)}(ax+b)^{n+1}+C,\quad n\neq -1$$`) +
+  card('c-rumus', 'Sifat-sifat', String.raw`<ul><li>$\int k\,f(x)\,dx = k\int f(x)\,dx$, dengan $k$ konstanta</li><li>$\int [f(x)\pm g(x)]\,dx=\int f(x)\,dx \pm \int g(x)\,dx$</li></ul><p>Untuk bentuk akar dan pecahan, ubah dulu ke pangkat: $\sqrt{x}=x^{1/2}$ dan $\dfrac{1}{x^2}=x^{-2}$.</p>`) +
+  card('c-contoh', 'Contoh Soal &amp; Pembahasan', String.raw`<p><b>Soal:</b> Tentukan $\int (6x^2-4x+5)\,dx$.</p><p><b>Pembahasan:</b></p>$$\int (6x^2-4x+5)\,dx = 6\cdot\frac{x^3}{3}-4\cdot\frac{x^2}{2}+5x + C$$$$= 2x^3-2x^2+5x+C$$<p>Cek dengan menurunkan: $(2x^3-2x^2+5x+C)'=6x^2-4x+5$ (sesuai).</p>`)
+},
+{ id: 's2', title: '3. Metode Substitusi', html:
+  '<h3 class="text-2xl font-bold mb-2">3. Metode Substitusi</h3>' +
+  card('c-def', 'Konsep', String.raw`<p>Substitusi dipakai untuk integran berbentuk fungsi komposisi yang disertai turunan bagian dalamnya. Bagian dalam diganti dengan variabel baru $u$ sehingga integralnya menjadi lebih sederhana.</p>`) +
+  card('c-def', 'Syarat', String.raw`<ul><li>Integran dapat ditulis sebagai $f(g(x))\cdot g'(x)$.</li><li>Jika $g'(x)$ hanya berbeda konstanta, selisihnya diatur dengan mengalikan konstanta penyeimbang.</li></ul>`) +
+  card('c-rumus', 'Rumus Utama', String.raw`$$\int f(g(x))\,g'(x)\,dx=\int f(u)\,du,\quad u=g(x),\ du=g'(x)\,dx$$`) +
+  card('c-rumus', 'Langkah-langkah', String.raw`<ol><li>Pilih $u$ = bagian dalam (misalnya yang berpangkat atau di dalam akar).</li><li>Hitung $du = u'\,dx$, lalu nyatakan $dx$ atau perkalian $x\,dx$ dalam $du$.</li><li>Ganti seluruh bentuk $x$ menjadi $u$, lalu integralkan.</li><li>Kembalikan $u$ ke bentuk $x$ dan tambahkan $+C$.</li></ol>`) +
+  card('c-contoh', 'Contoh Soal &amp; Pembahasan', String.raw`<p><b>Soal:</b> Tentukan $\int x(x^2+3)^5\,dx$.</p><p><b>Pembahasan:</b></p><ol><li>Misal $u=x^2+3$, maka $du=2x\,dx$ sehingga $x\,dx=\tfrac12\,du$.</li><li>Substitusi: $$\int x(x^2+3)^5\,dx=\frac12\int u^5\,du$$</li><li>Integralkan: $$\frac12\cdot\frac{u^6}{6}+C=\frac{u^6}{12}+C$$</li><li>Kembalikan: $$\frac{(x^2+3)^6}{12}+C$$</li></ol>`)
+},
+{ id: 's3', title: '4. Integral Parsial', html:
+  '<h3 class="text-2xl font-bold mb-2">4. Integral Parsial</h3>' +
+  card('c-def', 'Konsep', String.raw`<p>Integral parsial dipakai saat integran berupa hasil kali dua fungsi dan substitusi tidak cocok. Rumusnya berasal dari aturan turunan hasil kali: $d(uv)=u\,dv+v\,du$.</p>`) +
+  card('c-rumus', 'Rumus Utama', String.raw`$$\int u\,dv = u\,v-\int v\,du$$`) +
+  card('c-rumus', 'Strategi Memilih $u$ dan $dv$', String.raw`<ul><li>Pilih $dv$ sebagai bagian yang <b>mudah diintegralkan</b>.</li><li>Pilih $u$ sebagai bagian yang <b>turunannya lebih sederhana</b> (biasanya suku $x$ atau polinom berderajat rendah).</li><li>Setelah diterapkan, integral $\int v\,du$ harus lebih mudah dari integral semula.</li><li>Untuk fungsi aljabar, pola yang sering dipakai adalah $u=x$ dan $dv=(ax+b)^n\,dx$ atau $dv=\sqrt{ax+b}\,dx$.</li></ul>`) +
+  card('c-contoh', 'Contoh Soal &amp; Pembahasan', String.raw`<p><b>Soal:</b> Tentukan $\int x\sqrt{x+1}\,dx$.</p><p><b>Pembahasan:</b></p><ol><li>Pilih $u=x$ sehingga $du=dx$; pilih $dv=(x+1)^{1/2}dx$ sehingga $v=\tfrac23(x+1)^{3/2}$.</li><li>Terapkan rumus: $$\int x\sqrt{x+1}\,dx=\tfrac23x(x+1)^{3/2}-\tfrac23\int (x+1)^{3/2}\,dx$$</li><li>Integralkan sisanya: $$\tfrac23\int (x+1)^{3/2}dx=\tfrac23\cdot\tfrac25(x+1)^{5/2}=\tfrac{4}{15}(x+1)^{5/2}$$</li><li>Hasil: $$\tfrac23x(x+1)^{3/2}-\tfrac{4}{15}(x+1)^{5/2}+C=\tfrac{2}{15}(3x-2)(x+1)^{3/2}+C$$</li></ol>`)
+},
+{ id: 'st', title: '5. Integral Trigonometri', html:
+  '<h3 class="text-2xl font-bold mb-2">5. Integral Trigonometri</h3>' +
+  card('c-def', 'Konsep', String.raw`<p>Integral fungsi trigonometri diperoleh dengan membalik turunannya. Ingat: $(\sin x)'=\cos x$, $(\cos x)'=-\sin x$, dan $(\tan x)'=\sec^2x$. Pada kalkulus, sudut selalu dinyatakan dalam <b>radian</b>.</p>`) +
+  card('c-rumus', 'Rumus Utama', String.raw`<div class="scroll-x"><table class="tbl"><thead><tr><th>Integran</th><th>Hasil integral</th></tr></thead><tbody>
+  <tr><td>$\sin x$</td><td>$-\cos x+C$</td></tr>
+  <tr><td>$\cos x$</td><td>$\sin x+C$</td></tr>
+  <tr><td>$\sec^2 x$</td><td>$\tan x+C$</td></tr>
+  <tr><td>$\sin(ax+b)$</td><td>$-\dfrac1a\cos(ax+b)+C$</td></tr>
+  <tr><td>$\cos(ax+b)$</td><td>$\dfrac1a\sin(ax+b)+C$</td></tr>
+  <tr><td>$\sec^2(ax+b)$</td><td>$\dfrac1a\tan(ax+b)+C$</td></tr>
+  </tbody></table></div>`) +
+  card('c-rumus', 'Identitas yang Sering Dipakai', String.raw`<ul><li>$\sin^2x+\cos^2x=1$</li><li>$\sin^2x=\dfrac{1-\cos 2x}{2}$ dan $\cos^2x=\dfrac{1+\cos 2x}{2}$</li><li>$\sin x\cos x=\tfrac12\sin 2x$</li><li>$\sin A\cos B=\tfrac12\big[\sin(A+B)+\sin(A-B)\big]$</li><li>$\cos A\cos B=\tfrac12\big[\cos(A+B)+\cos(A-B)\big]$</li><li>$\sin A\sin B=\tfrac12\big[\cos(A-B)-\cos(A+B)\big]$</li></ul>`) +
+  card('c-def', 'Strategi Memilih Teknik', String.raw`<ol><li><b>Bentuk langsung:</b> pakai tabel rumus, bagi dengan $a$ bila sudutnya $ax+b$.</li><li><b>Pangkat genap</b> ($\sin^2x$, $\cos^2x$): turunkan pangkat dengan identitas sudut ganda.</li><li><b>Pangkat ganjil atau ada pasangan turunan</b> (misalnya $\sin^nx\cos x$): substitusi $u=\sin x$ atau $u=\cos x$; untuk $\sin^3x$, pisahkan satu faktor dan ubah sisanya dengan $\sin^2x+\cos^2x=1$.</li><li><b>Perkalian sudut berbeda</b> ($\sin 3x\cos x$): ubah menjadi jumlah dengan rumus hasil kali.</li></ol>`) +
+  card('c-def', 'Visualisasi: Integral Tentu Fungsi Trigonometri', '<div class="cols2 mt-2"><figure class="fig"><div data-viz="sin1"></div><figcaption class="text-sm mt-1"><b>(a)</b> $y=\\sin x$ pada $[0,\\pi]$: $\\int_0^\\pi \\sin x\\,dx=\\big[-\\cos x\\big]_0^\\pi=2$, sama dengan luas daerahnya.</figcaption></figure><figure class="fig"><div data-viz="cos1"></div><figcaption class="text-sm mt-1"><b>(b)</b> $y=\\cos x$ pada $[0,\\pi]$: $\\int_0^\\pi \\cos x\\,dx=\\big[\\sin x\\big]_0^\\pi=0$, tetapi luas daerahnya $2$ karena bagian di bawah sumbu-$x$ bernilai negatif.</figcaption></figure></div>') +
+  card('c-catatan', 'Nilai Penting pada Batas Integral', String.raw`<p>$\sin 0=0,\ \cos 0=1,\ \sin\tfrac\pi2=1,\ \cos\tfrac\pi2=0,\ \sin\pi=0,\ \cos\pi=-1$. Pastikan kalkulator berada pada mode radian.</p>`) +
+  card('c-contoh', 'Contoh Soal &amp; Pembahasan', String.raw`<p><b>Soal:</b> Tentukan $\int \big(6\cos x+4\sin 2x\big)\,dx$.</p><p><b>Pembahasan:</b></p><ol><li>Integralkan tiap suku: $$\int 6\cos x\,dx=6\sin x$$</li><li>$$\int 4\sin 2x\,dx=4\cdot\Big(-\frac12\cos 2x\Big)=-2\cos 2x$$</li><li>Hasil: $$6\sin x-2\cos 2x+C$$</li><li>Cek: $(6\sin x-2\cos 2x)'=6\cos x+4\sin 2x$ (sesuai).</li></ol>`)
+},
+{ id: 's4', title: '6. Integral Tentu', html:
+  '<h3 class="text-2xl font-bold mb-2">6. Integral Tentu</h3>' +
+  card('c-def', 'Konsep', String.raw`<p>Integral tentu memiliki batas bawah $a$ dan batas atas $b$, dan hasilnya berupa <b>bilangan</b> (tanpa $C$). Secara geometri, nilainya adalah luas bertanda antara kurva $y=f(x)$ dan sumbu-$x$ pada $[a,b]$.</p>`) +
+  card('c-rumus', 'Teorema Dasar Kalkulus', String.raw`<p>Jika $F$ adalah antiturunan $f$ pada $[a,b]$, maka</p>$$\int_a^b f(x)\,dx=\Big[F(x)\Big]_a^b=F(b)-F(a)$$`) +
+  card('c-rumus', 'Sifat Batas Integral', String.raw`<ul><li>$\int_a^a f(x)\,dx=0$</li><li>$\int_a^b f(x)\,dx=-\int_b^a f(x)\,dx$</li><li>$\int_a^b k\,f(x)\,dx=k\int_a^b f(x)\,dx$</li><li>$\int_a^b [f(x)\pm g(x)]\,dx=\int_a^b f(x)\,dx\pm\int_a^b g(x)\,dx$</li><li>$\int_a^b f(x)\,dx+\int_b^c f(x)\,dx=\int_a^c f(x)\,dx$</li></ul>`) +
+  card('c-contoh', 'Contoh Soal &amp; Pembahasan', String.raw`<p><b>Soal:</b> Hitunglah $\int_1^3 (3x^2-2x+1)\,dx$.</p><p><b>Pembahasan:</b></p><ol><li>Cari antiturunan: $$F(x)=x^3-x^2+x$$</li><li>Terapkan teorema dasar: $$\Big[x^3-x^2+x\Big]_1^3=(27-9+3)-(1-1+1)$$</li><li>$$=21-1=20$$</li></ol>`)
+},
+{ id: 's5', title: '7. Penerapan: Luas Daerah', html:
+  '<h3 class="text-2xl font-bold mb-2">7. Penerapan: Luas Daerah</h3>' +
+  card('c-def', 'Konsep', String.raw`<p>Luas tidak pernah negatif. Bila kurva berada di bawah sumbu-$x$, nilai integralnya negatif sehingga harus diberi tanda minus atau diambil nilai mutlaknya.</p>`) +
+  card('c-def', 'Visualisasi Jenis-jenis Daerah', String.raw`<p>Daerah yang diarsir adalah daerah yang luasnya dicari. Perhatikan posisi kurva terhadap sumbu-$x$.</p><div class="cols2 mt-2">
+  <figure class="fig"><div data-viz="atas"></div><figcaption class="text-sm mt-1"><b>(a) Di atas sumbu-$x$.</b> $y=x^2$ pada $[0,2]$: $L=\int_0^2 x^2\,dx=\frac{8}{3}$</figcaption></figure>
+  <figure class="fig"><div data-viz="bawah"></div><figcaption class="text-sm mt-1"><b>(b) Di bawah sumbu-$x$.</b> $y=x^2-4x$ pada $[0,4]$: $L=-\int_0^4 (x^2-4x)\,dx=\frac{32}{3}$</figcaption></figure>
+  <figure class="fig"><div data-viz="memotong"></div><figcaption class="text-sm mt-1"><b>(c) Kurva memotong sumbu-$x$.</b> $y=x^3-4x$ pada $[-2,2]$: dipecah di $x=0$, $L=4+4=8$</figcaption></figure>
+  <figure class="fig"><div data-viz="dua"></div><figcaption class="text-sm mt-1"><b>(d) Dua kurva.</b> $y=x+2$ (atas) dan $y=x^2$ (bawah): $L=\int_{-1}^{2}(x+2-x^2)\,dx=\frac{9}{2}$</figcaption></figure></div>`) +
+  card('c-rumus', 'Tabel Rumus Luas Daerah', String.raw`<div class="scroll-x"><table class="tbl"><thead><tr><th>Jenis daerah</th><th>Rumus luas</th></tr></thead><tbody>
+  <tr><td>Satu kurva, di atas sumbu-$x$ ($f(x)\ge 0$), $a\le x\le b$</td><td>$L=\int_a^b f(x)\,dx$</td></tr>
+  <tr><td>Satu kurva, di bawah sumbu-$x$ ($f(x)\le 0$)</td><td>$L=-\int_a^b f(x)\,dx$</td></tr>
+  <tr><td>Satu kurva memotong sumbu-$x$ di $c$</td><td>$L=\int_a^c |f(x)|\,dx+\int_c^b |f(x)|\,dx$</td></tr>
+  <tr><td>Dua kurva, $f(x)\ge g(x)$ pada $[a,b]$</td><td>$L=\int_a^b [f(x)-g(x)]\,dx$</td></tr>
+  </tbody></table></div><p>Batas $a$ dan $b$ pada dua kurva biasanya diperoleh dari titik potong, yaitu penyelesaian $f(x)=g(x)$.</p>`) +
+  card('c-contoh', 'Contoh Soal &amp; Pembahasan', String.raw`<p><b>Soal:</b> Hitung luas daerah yang dibatasi oleh kurva $y=6x-x^2$ dan garis $y=x$.</p><figure class="fig" style="max-width:460px"><div data-viz="c1"></div></figure><p><b>Pembahasan:</b></p><ol><li>Titik potong: $6x-x^2=x \Rightarrow x^2-5x=0 \Rightarrow x=0$ atau $x=5$.</li><li>Pada $[0,5]$, kurva $y=6x-x^2$ berada di atas garis $y=x$ (uji $x=1$: $5>1$).</li><li>$$L=\int_0^5 \big[(6x-x^2)-x\big]dx=\int_0^5 (5x-x^2)\,dx$$</li><li>$$=\Big[\tfrac52x^2-\tfrac13x^3\Big]_0^5=\tfrac{125}{2}-\tfrac{125}{3}=\tfrac{125}{6}$$</li></ol><p>Jadi luasnya $\dfrac{125}{6}$ satuan luas.</p>`) +
+  card('c-def', 'Eksplorasi Interaktif: Geser Nilai $k$', '<p>Daerah dibatasi parabola $y=x^2$ dan garis $y=kx$. Geser slider dan amati bagaimana daerah serta luasnya berubah. Titik potongnya selalu di $x=0$ dan $x=k$, sehingga $L=\\int_0^k (kx-x^2)\\,dx=\\dfrac{k^3}{6}$.</p>' +
+    '<label for="kSlider" class="font-semibold no-print">Nilai k: <span id="kVal">3</span></label>' +
+    '<input id="kSlider" type="range" min="1" max="6" step="0.5" value="3" class="w-full no-print">' +
+    '<div class="fig mt-2" id="kViz"></div><p id="kInfo" class="font-semibold mt-2"></p>') +
+  card('c-def', 'Animasi: Luas sebagai Jumlah Persegi Panjang', '<p>Daerah dibagi menjadi $n$ persegi panjang tipis dengan lebar $\\Delta x$ dan tinggi diukur di titik tengah. Makin besar $n$, jumlah luas persegi panjang makin mendekati luas sebenarnya: $L=\\lim_{n\\to\\infty}\\sum f(x_i)\\,\\Delta x=\\int_a^b f(x)\\,dx$.</p>' +
+    '<div class="flex flex-wrap gap-2 items-center mt-2 no-print"><label for="rzSel" class="font-semibold">Daerah:</label>' +
+    '<select id="rzSel" class="border border-slate-300 rounded-lg px-2 py-1 bg-white"><option value="a">y = x², 0 ≤ x ≤ 2</option><option value="b">Antara y = x + 2 dan y = x², −1 ≤ x ≤ 2</option></select>' +
+    '<button class="btn btn-teal" onclick="playRZ()">Putar Animasi</button><button class="btn" onclick="stopRZ()">Jeda</button></div>' +
+    '<label for="rzN" class="font-semibold block mt-2 no-print">Jumlah persegi panjang n = <span id="rzNVal">5</span></label>' +
+    '<input id="rzN" type="range" min="1" max="60" step="1" value="5" class="w-full no-print">' +
+    '<div class="fig mt-2" id="rzViz"></div><p id="rzInfo" class="font-semibold mt-2"></p>') +
+  card('c-contoh', 'Latihan Soal: Hitung Luas Daerah', '<p class="mb-2">Kerjakan dulu di kertas, lalu isi jawabanmu (boleh pecahan seperti 8/3 atau desimal seperti 2.67). Tekan <b>Soal Baru</b> untuk soal lainnya.</p>' +
+    '<div id="latBody"></div>' +
+    '<div class="mt-3 flex flex-wrap gap-2 items-center no-print"><label for="latIn" class="font-semibold">Jawabanmu:</label>' +
+    '<input id="latIn" type="text" inputmode="decimal" autocomplete="off" placeholder="mis. 8/3 atau 2.67" class="ans-in border border-slate-300 rounded-lg px-3 py-1.5 w-44 bg-white" data-ok-fn="checkLat" oninput="updPrev(\'latIn\')" onkeydown="if(event.key===\'Enter\')checkLat()">' +
+    '<button class="btn" onclick="checkLat()">Periksa</button><button class="btn" onclick="showLat()">Lihat Pembahasan</button><button class="btn btn-teal" onclick="newLat()">Soal Baru</button><button type="button" class="btn" onclick="toggleKeypad(\'latIn\')">Keypad</button></div>' + ansTools('latIn') +
+    '<p id="latFb" class="mt-2 font-semibold" aria-live="polite"></p><p id="latScore" class="text-sm text-slate-600"></p><div id="latSol"></div>')
+},
+{ id: 's6', title: '8. Penerapan: Volume Benda Putar', html:
+  '<h3 class="text-2xl font-bold mb-2">8. Penerapan: Volume Benda Putar</h3>' +
+  card('c-def', 'Konsep', String.raw`<p>Daerah datar diputar $360^\circ$ mengelilingi sumbu-$x$ menghasilkan benda putar. Benda itu diiris tegak lurus sumbu-$x$ menjadi cakram tipis berjari-jari $f(x)$, volume tiap cakram $\pi[f(x)]^2\,dx$, lalu dijumlahkan dengan integral.</p>`) +
+  card('c-rumus', 'Rumus Utama', String.raw`<p><b>Metode cakram</b> (satu kurva $y=f(x)$, $a\le x\le b$):</p>$$V=\pi\int_a^b [f(x)]^2\,dx$$<p><b>Metode cincin</b> (dua kurva, $f(x)$ di luar dan $g(x)$ di dalam, $f(x)\ge g(x)\ge 0$):</p>$$V=\pi\int_a^b \big([f(x)]^2-[g(x)]^2\big)\,dx$$`) +
+  card('c-catatan', 'Catatan Penting', String.raw`<p>Kuadratkan masing-masing fungsi <b>lebih dulu</b>, baru dikurangkan. Jadi $[f(x)]^2-[g(x)]^2 \neq [f(x)-g(x)]^2$.</p>`) +
+  card('c-contoh', 'Contoh Soal &amp; Pembahasan', String.raw`<p><b>Soal:</b> Daerah yang dibatasi oleh $y=2x$ dan $y=x^2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volumenya.</p><div class="cols2"><figure class="fig"><div data-viz="v1"></div><figcaption class="text-sm">Daerah yang diputar</figcaption></figure><figure class="fig"><div data-solid="v1"></div><figcaption class="text-sm">Benda putar (cincin)</figcaption></figure></div><p><b>Pembahasan:</b></p><ol><li>Titik potong: $x^2=2x \Rightarrow x=0$ atau $x=2$.</li><li>Pada $[0,2]$, garis $y=2x$ di luar dan parabola $y=x^2$ di dalam (uji $x=1$: $2>1$).</li><li>$$V=\pi\int_0^2\big[(2x)^2-(x^2)^2\big]dx=\pi\int_0^2 (4x^2-x^4)\,dx$$</li><li>$$=\pi\Big[\tfrac43x^3-\tfrac15x^5\Big]_0^2=\pi\Big(\tfrac{32}{3}-\tfrac{32}{5}\Big)=\tfrac{64}{15}\pi$$</li></ol><p>Jadi volumenya $\dfrac{64}{15}\pi$ satuan volume.</p>`) +
+  card('c-def', 'Animasi: Daerah Diputar 360° Mengelilingi Sumbu-x', '<p>Tekan <b>Putar 360°</b> untuk melihat daerah datar (hijau) berputar mengelilingi sumbu-$x$. Lingkaran hijau adalah jejak kurva luar, lingkaran oranye adalah jejak kurva dalam. Geser <b>posisi irisan</b> untuk melihat satu cakram atau cincin tipis (oranye); volume benda adalah jumlah semua irisan itu: $V=\\pi\\int_a^b\\big([f(x)]^2-[g(x)]^2\\big)dx$.</p>' +
+    '<div class="flex flex-wrap gap-2 items-center mt-2 no-print"><label for="volSel" class="font-semibold">Benda:</label>' +
+    '<select id="volSel" class="border border-slate-300 rounded-lg px-2 py-1 bg-white"><option value="cakram">Cakram: y = √x, 0 ≤ x ≤ 4</option><option value="cincin">Cincin: y = 2x dan y = x², 0 ≤ x ≤ 2</option></select>' +
+    '<button class="btn btn-teal" onclick="playVol()">Putar 360°</button><button class="btn" onclick="stopVol()">Jeda</button></div>' +
+    '<div class="cols2 mt-2 no-print"><div><label for="volAng" class="font-semibold">Sudut putar: <span id="volAngVal">360</span>°</label><input id="volAng" type="range" min="0" max="360" step="1" value="360" class="w-full"></div>' +
+    '<div><label for="volPos" class="font-semibold">Posisi irisan</label><input id="volPos" type="range" min="0" max="100" step="1" value="55" class="w-full"></div></div>' +
+    '<div class="fig mt-2"><canvas id="volCanvas" width="640" height="360" style="width:100%;height:auto;display:block" role="img" aria-label="Animasi daerah diputar mengelilingi sumbu x"></canvas></div><p id="volInfo" class="font-semibold mt-2"></p>')
+}
+];
+
+/* ---------- CONTOH LAINNYA (menu di bawah pembahasan) ---------- */
+var figR = function (k) { return '<figure class="fig" style="max-width:460px"><div data-viz="' + k + '"></div></figure>'; };
+var figV = function (k, jenis) { return '<div class="cols2"><figure class="fig"><div data-viz="' + k + '"></div><figcaption class="text-sm">Daerah yang diputar</figcaption></figure><figure class="fig"><div data-solid="' + k + '"></div><figcaption class="text-sm">Benda putar (' + jenis + ')</figcaption></figure></div>'; };
+var EXTRA = {
+st: [
+ { q: String.raw`Tentukan $\int \sin^2x\,dx$.`, a: String.raw`<ol><li>Pangkat genap: gunakan $\sin^2x=\dfrac{1-\cos 2x}{2}$.</li><li>$$\int \frac{1-\cos 2x}{2}\,dx=\frac12\int (1-\cos 2x)\,dx=\frac12\Big(x-\frac{\sin 2x}{2}\Big)+C$$</li><li>Hasil: $$\frac{x}{2}-\frac{\sin 2x}{4}+C$$</li></ol>` },
+ { q: String.raw`Tentukan $\int \sin^3x\cos x\,dx$.`, a: String.raw`<ol><li>Misal $u=\sin x$, maka $du=\cos x\,dx$.</li><li>$$\int u^3\,du=\frac{u^4}{4}+C$$</li><li>Hasil: $$\frac{\sin^4x}{4}+C$$</li></ol>` },
+ { q: String.raw`Hitunglah $\int_0^{\pi/3}\sin x\cos x\,dx$.`, a: String.raw`<ol><li>Gunakan $\sin x\cos x=\tfrac12\sin 2x$: $$\int_0^{\pi/3}\tfrac12\sin 2x\,dx=\tfrac12\Big[-\tfrac12\cos 2x\Big]_0^{\pi/3}=-\tfrac14\Big[\cos 2x\Big]_0^{\pi/3}$$</li><li>$$=-\tfrac14\Big(\cos\tfrac{2\pi}{3}-\cos 0\Big)=-\tfrac14\Big(-\tfrac12-1\Big)=\tfrac38$$</li></ol><p>Cek lewat substitusi $u=\sin x$: $\Big[\tfrac12\sin^2x\Big]_0^{\pi/3}=\tfrac12\cdot\tfrac34=\tfrac38$.</p>` }
+],
+s0: [
+ { q: String.raw`Tentukan antiderivatif umum dari $f(x)=5x^4+6x-1$.`, a: String.raw`<ol><li>$$F(x)=5\cdot\frac{x^5}{5}+6\cdot\frac{x^2}{2}-x+C$$</li><li>Hasil: $$F(x)=x^5+3x^2-x+C$$</li><li>Cek: $F'(x)=5x^4+6x-1$ (sesuai).</li></ol>` },
+ { q: String.raw`Buktikan bahwa $F(x)=x^3+2x$ dan $G(x)=x^3+2x-7$ sama-sama antiderivatif dari $f(x)=3x^2+2$.`, a: String.raw`<ol><li>$F'(x)=3x^2+2=f(x)$.</li><li>$G'(x)=3x^2+2-0=f(x)$.</li><li>Keduanya berbeda hanya pada konstanta ($-7$), sehingga bentuk umumnya $x^3+2x+C$.</li></ol>` },
+ { q: String.raw`Diketahui $F'(x)=9x^2-2x+1$ dan $F(0)=4$. Tentukan $F(x)$.`, a: String.raw`<ol><li>$$F(x)=\int (9x^2-2x+1)\,dx=3x^3-x^2+x+C$$</li><li>Dari $F(0)=4$ diperoleh $C=4$.</li><li>Jadi $$F(x)=3x^3-x^2+x+4$$</li></ol>` }
+],
+s1: [
+ { q: String.raw`Tentukan $\int \left(x^4-\dfrac{3}{x^2}+2\sqrt{x}\right)dx$.`, a: String.raw`<ol><li>Ubah ke bentuk pangkat: $$\int (x^4-3x^{-2}+2x^{1/2})\,dx$$</li><li>Integralkan tiap suku: $$\frac{x^5}{5}-3\cdot\frac{x^{-1}}{-1}+2\cdot\frac{x^{3/2}}{3/2}+C$$</li><li>Hasil: $$\frac{x^5}{5}+\frac{3}{x}+\frac43x^{3/2}+C$$</li></ol>` },
+ { q: String.raw`Tentukan $\int (2x-3)^4\,dx$.`, a: String.raw`<ol><li>Gunakan $\int (ax+b)^n dx=\dfrac{1}{a(n+1)}(ax+b)^{n+1}+C$ dengan $a=2$, $n=4$.</li><li>$$\frac{1}{2\cdot 5}(2x-3)^5+C=\frac{(2x-3)^5}{10}+C$$</li></ol>` },
+ { q: String.raw`Gradien garis singgung suatu kurva adalah $f'(x)=3x^2-4x+1$ dan kurva melalui titik $(2,5)$. Tentukan persamaan kurvanya.`, a: String.raw`<ol><li>$$f(x)=\int (3x^2-4x+1)\,dx=x^3-2x^2+x+C$$</li><li>Titik $(2,5)$: $8-8+2+C=5 \Rightarrow C=3$.</li><li>Jadi $$f(x)=x^3-2x^2+x+3$$</li></ol>` }
+],
+s2: [
+ { q: String.raw`Tentukan $\int 6x^2(2x^3+1)^4\,dx$.`, a: String.raw`<ol><li>Misal $u=2x^3+1$, maka $du=6x^2\,dx$.</li><li>$$\int u^4\,du=\frac{u^5}{5}+C$$</li><li>Hasil: $$\frac{(2x^3+1)^5}{5}+C$$</li></ol>` },
+ { q: String.raw`Tentukan $\int \dfrac{x}{\sqrt{x^2+4}}\,dx$.`, a: String.raw`<ol><li>Misal $u=x^2+4$, maka $x\,dx=\tfrac12du$.</li><li>$$\tfrac12\int u^{-1/2}du=\tfrac12\cdot 2u^{1/2}+C=\sqrt{u}+C$$</li><li>Hasil: $$\sqrt{x^2+4}+C$$</li></ol>` },
+ { q: String.raw`Tentukan $\int (3x+1)\sqrt{3x^2+2x}\,dx$.`, a: String.raw`<ol><li>Misal $u=3x^2+2x$, maka $du=(6x+2)\,dx=2(3x+1)\,dx$, sehingga $(3x+1)\,dx=\tfrac12du$.</li><li>$$\tfrac12\int u^{1/2}du=\tfrac12\cdot\tfrac23u^{3/2}+C=\tfrac13u^{3/2}+C$$</li><li>Hasil: $$\tfrac13(3x^2+2x)^{3/2}+C$$</li></ol>` }
+],
+s3: [
+ { q: String.raw`Tentukan $\int x(x-2)^3\,dx$.`, a: String.raw`<ol><li>Pilih $u=x$, $du=dx$; $dv=(x-2)^3dx$, $v=\tfrac14(x-2)^4$.</li><li>$$\int x(x-2)^3dx=\tfrac14x(x-2)^4-\tfrac14\int (x-2)^4dx$$</li><li>$$=\tfrac14x(x-2)^4-\tfrac1{20}(x-2)^5+C$$</li><li>Sederhanakan: $$\tfrac{1}{20}(x-2)^4\big[5x-(x-2)\big]+C=\tfrac{1}{10}(x-2)^4(2x+1)+C$$</li></ol>` },
+ { q: String.raw`Tentukan $\int x\sqrt{2x+3}\,dx$.`, a: String.raw`<ol><li>Pilih $u=x$, $dv=(2x+3)^{1/2}dx$ sehingga $v=\tfrac13(2x+3)^{3/2}$.</li><li>$$\int x\sqrt{2x+3}\,dx=\tfrac13x(2x+3)^{3/2}-\tfrac13\int (2x+3)^{3/2}dx$$</li><li>$$\tfrac13\int (2x+3)^{3/2}dx=\tfrac13\cdot\tfrac{1}{2}\cdot\tfrac25(2x+3)^{5/2}=\tfrac1{15}(2x+3)^{5/2}$$</li><li>Hasil: $$\tfrac13x(2x+3)^{3/2}-\tfrac1{15}(2x+3)^{5/2}+C=\tfrac15(x-1)(2x+3)^{3/2}+C$$</li></ol>` },
+ { q: String.raw`Hitunglah $\int_0^3 x\sqrt{x+1}\,dx$ dengan integral parsial.`, a: String.raw`<ol><li>Pilih $u=x$, $dv=(x+1)^{1/2}dx$, $v=\tfrac23(x+1)^{3/2}$.</li><li>$$\int_0^3 x\sqrt{x+1}\,dx=\Big[\tfrac23x(x+1)^{3/2}\Big]_0^3-\tfrac23\int_0^3 (x+1)^{3/2}dx$$</li><li>Suku pertama: $\tfrac23\cdot3\cdot8=16$. Suku kedua: $$\tfrac23\Big[\tfrac25(x+1)^{5/2}\Big]_0^3=\tfrac{4}{15}(32-1)=\tfrac{124}{15}$$</li><li>Hasil: $$16-\tfrac{124}{15}=\tfrac{116}{15}$$</li></ol>` }
+],
+s4: [
+ { q: String.raw`Hitunglah $\int_{-1}^{2}(x^2-2x+3)\,dx$.`, a: String.raw`<ol><li>Antiturunan: $F(x)=\tfrac13x^3-x^2+3x$.</li><li>$$F(2)=\tfrac83-4+6=\tfrac{14}{3},\qquad F(-1)=-\tfrac13-1-3=-\tfrac{13}{3}$$</li><li>$$F(2)-F(-1)=\tfrac{14}{3}+\tfrac{13}{3}=9$$</li></ol>` },
+ { q: String.raw`Diketahui $\int_1^4 f(x)\,dx=7$ dan $\int_1^4 g(x)\,dx=3$. Hitunglah $\int_1^4 \big(2f(x)-3g(x)+1\big)dx$.`, a: String.raw`<ol><li>Pisahkan dengan sifat linear: $$2\int_1^4 f\,dx-3\int_1^4 g\,dx+\int_1^4 1\,dx$$</li><li>$$=2(7)-3(3)+\big[x\big]_1^4=14-9+3$$</li><li>Hasil: $8$.</li></ol>` },
+ { q: String.raw`Hitunglah $\int_0^2 2x(x^2+1)^3\,dx$ dengan substitusi.`, a: String.raw`<ol><li>Misal $u=x^2+1$, maka $du=2x\,dx$.</li><li>Ubah batas: $x=0\Rightarrow u=1$ dan $x=2\Rightarrow u=5$.</li><li>$$\int_1^5 u^3\,du=\Big[\tfrac{u^4}{4}\Big]_1^5=\tfrac{625-1}{4}=156$$</li></ol>` }
+],
+s5: [
+ { q: String.raw`Hitung luas daerah yang dibatasi oleh kurva $y=x^2-4x+3$ dan sumbu-$x$.`, fig: figR('e1'), a: String.raw`<ol><li>Titik potong sumbu-$x$: $(x-1)(x-3)=0 \Rightarrow x=1$ atau $x=3$.</li><li>Pada $[1,3]$ kurva di bawah sumbu-$x$ (uji $x=2$: $y=-1$), sehingga $$L=-\int_1^3 (x^2-4x+3)\,dx$$</li><li>$$=-\Big[\tfrac13x^3-2x^2+3x\Big]_1^3=-\Big(0-\tfrac43\Big)=\tfrac43$$</li></ol><p>Luas = $\dfrac43$ satuan luas.</p>` },
+ { q: String.raw`Hitung luas daerah yang dibatasi oleh kurva $y=x^3-x$ dan sumbu-$x$.`, fig: figR('e2'), a: String.raw`<ol><li>Titik potong: $x(x-1)(x+1)=0 \Rightarrow x=-1,\,0,\,1$.</li><li>Pada $[-1,0]$ kurva di atas sumbu-$x$; pada $[0,1]$ di bawah sumbu-$x$. Daerah dipecah: $$L=\int_{-1}^0 (x^3-x)\,dx-\int_0^1 (x^3-x)\,dx$$</li><li>$$\int_{-1}^0 (x^3-x)\,dx=\tfrac14,\qquad -\int_0^1 (x^3-x)\,dx=\tfrac14$$</li><li>$$L=\tfrac14+\tfrac14=\tfrac12$$</li></ol>` },
+ { q: String.raw`Hitung luas daerah yang dibatasi oleh kurva $y=\sqrt{x}$ dan $y=x^2$.`, fig: figR('e3'), a: String.raw`<ol><li>Titik potong: $\sqrt{x}=x^2 \Rightarrow x=x^4 \Rightarrow x=0$ atau $x=1$.</li><li>Pada $[0,1]$: $\sqrt{x}$ di atas $x^2$ (uji $x=\tfrac14$: $\tfrac12>\tfrac1{16}$).</li><li>$$L=\int_0^1 (x^{1/2}-x^2)\,dx=\Big[\tfrac23x^{3/2}-\tfrac13x^3\Big]_0^1=\tfrac23-\tfrac13=\tfrac13$$</li></ol>` }
+],
+s6: [
+ { q: String.raw`Daerah yang dibatasi oleh $y=x+1$, sumbu-$x$, sumbu-$y$, dan garis $x=2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volumenya.`, fig: figV('w1', 'cakram'), a: String.raw`<ol><li>Metode cakram dengan $f(x)=x+1$ pada $[0,2]$.</li><li>$$V=\pi\int_0^2 (x+1)^2\,dx=\pi\Big[\tfrac13(x+1)^3\Big]_0^2$$</li><li>$$=\pi\cdot\tfrac{27-1}{3}=\tfrac{26}{3}\pi$$</li></ol>` },
+ { q: String.raw`Daerah yang dibatasi oleh $y=x$ dan $y=x^2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volumenya.`, fig: figV('w2', 'cincin'), a: String.raw`<ol><li>Titik potong: $x=x^2 \Rightarrow x=0$ atau $x=1$. Pada $[0,1]$, $y=x$ di luar dan $y=x^2$ di dalam.</li><li>$$V=\pi\int_0^1 \big[x^2-(x^2)^2\big]dx=\pi\int_0^1 (x^2-x^4)\,dx$$</li><li>$$=\pi\Big[\tfrac13x^3-\tfrac15x^5\Big]_0^1=\pi\Big(\tfrac13-\tfrac15\Big)=\tfrac{2}{15}\pi$$</li></ol>` },
+ { q: String.raw`Daerah yang dibatasi oleh $y=x^2$, sumbu-$x$, garis $x=1$, dan garis $x=2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volumenya.`, fig: figV('w3', 'cakram'), a: String.raw`<ol><li>Metode cakram dengan $f(x)=x^2$ pada $[1,2]$.</li><li>$$V=\pi\int_1^2 (x^2)^2dx=\pi\int_1^2 x^4dx=\pi\Big[\tfrac15x^5\Big]_1^2$$</li><li>$$=\pi\cdot\tfrac{32-1}{5}=\tfrac{31}{5}\pi$$</li></ol>` }
+]
+};
+function more(id, list) {
+  var btns = '', panels = '';
+  list.forEach(function (e, i) {
+    btns += '<button class="exbtn' + (i === 0 ? ' active' : '') + '" data-sec="' + id + '" data-i="' + i + '" onclick="showEx(\'' + id + '\',' + i + ')">Contoh ' + (i + 2) + '</button>';
+    panels += '<div class="ex-panel' + (i === 0 ? ' show' : '') + '" data-sec="' + id + '" data-i="' + i + '"><p class="font-bold mt-3">Contoh ' + (i + 2) + '</p><p><b>Soal:</b> ' + e.q + '</p>' + (e.fig || '') + '<p class="mt-2"><b>Pembahasan:</b></p>' + e.a + '</div>';
+  });
+  return card('c-contoh', 'Contoh Lainnya', '<p class="no-print">Pilih contoh di bawah untuk berlatih memahami variasi soal:</p><div class="flex flex-wrap gap-2 mt-2 no-print">' + btns + '</div>' + panels);
+}
+function showEx(id, i) {
+  document.querySelectorAll('.ex-panel[data-sec="' + id + '"]').forEach(function (p) { p.classList.toggle('show', +p.dataset.i === i); });
+  document.querySelectorAll('.exbtn[data-sec="' + id + '"]').forEach(function (b) { b.classList.toggle('active', +b.dataset.i === i); });
+  typeset(document.querySelector('.ex-panel[data-sec="' + id + '"][data-i="' + i + '"]'));
+}
+MODUL.forEach(function (m) { m.html += more(m.id, EXTRA[m.id]); });
+MODUL.forEach(function (m) { if (m.id === 'st') m.html += dynCard('tr', 'Latihan Soal: Integral Tentu Trigonometri', 'Kerjakan dulu di kertas, lalu isi jawabanmu berupa bilangan bulat. Sudut dalam radian. Tekan <b>Soal Baru</b> untuk soal lainnya.'); });
+var DYNMAP = { s1: 'tk', s2: 'sb', s3: 'pr', s4: 'td', s6: 'vl' };
+MODUL.forEach(function (m) { if (DYNMAP[m.id]) m.html += dynCard(DYNMAP[m.id], 'Latihan Soal', 'Kerjakan dulu di kertas, lalu isi jawabanmu (boleh berupa pecahan seperti 5/6). Tekan <b>Soal Baru</b> untuk soal lainnya.'); });
+MODUL[0].html += dynCard('an', 'Latihan Soal: Antiderivatif', 'Kerjakan dulu di kertas, lalu isi jawabanmu berupa bilangan bulat. Tekan <b>Soal Baru</b> untuk soal lainnya.');
+
+/* ---------- DATA SLIDE (11 slide) ---------- */
+var svgLuas1 = '<svg viewBox="0 0 260 160" class="w-full max-h-48" role="img" aria-label="Luas di bawah y = x kuadrat">' +
+  '<path d="M30 130 Q110 130 190 10 L190 130 Z" fill="#e9a0a0" opacity=".65"/>' +
+  '<path d="M30 130 Q110 130 190 10" fill="none" stroke="#8b1a1a" stroke-width="3"/>' +
+  '<line x1="20" y1="130" x2="250" y2="130" stroke="#1a1011" stroke-width="2"/><line x1="30" y1="140" x2="30" y2="5" stroke="#1a1011" stroke-width="2"/>' +
+  '<line x1="190" y1="10" x2="190" y2="130" stroke="#1a1011" stroke-dasharray="4"/>' +
+  '<text x="195" y="145" font-size="12">x = 2</text><text x="110" y="95" font-size="13" fill="#1a1011">L</text><text x="120" y="45" font-size="12" fill="#8b1a1a">y = x²</text></svg>';
+var svgLuas2 = '<svg viewBox="0 0 260 160" class="w-full max-h-48" role="img" aria-label="Luas di antara y = x dan y = x kuadrat">' +
+  '<path d="M30 140 L150 20 Q90 140 30 140 Z" fill="#f3dfa0" opacity=".85"/>' +
+  '<path d="M30 140 L150 20" fill="none" stroke="#a67c00" stroke-width="3"/><path d="M30 140 Q90 140 150 20" fill="none" stroke="#8b1a1a" stroke-width="3"/>' +
+  '<line x1="20" y1="140" x2="250" y2="140" stroke="#1a1011" stroke-width="2"/><line x1="30" y1="150" x2="30" y2="5" stroke="#1a1011" stroke-width="2"/>' +
+  '<text x="95" y="75" font-size="12" fill="#a67c00">y = x (atas)</text><text x="125" y="115" font-size="12" fill="#8b1a1a">y = x² (bawah)</text><text x="155" y="30" font-size="12">(1, 1)</text></svg>';
+var svgVol = '<svg viewBox="0 0 260 180" class="w-full max-h-48" role="img" aria-label="Benda putar y = akar x diputar mengelilingi sumbu x">' +
+  '<path d="M30 90 Q30 50 210 10 L210 170 Q30 130 30 90 Z" fill="#f3dfa0" opacity=".8"/>' +
+  '<path d="M30 90 Q30 50 210 10" fill="none" stroke="#1a1011" stroke-width="3"/><path d="M30 90 Q30 130 210 170" fill="none" stroke="#1a1011" stroke-width="3" stroke-dasharray="6 4"/>' +
+  '<ellipse cx="210" cy="90" rx="12" ry="80" fill="#e0b84a" stroke="#1a1011" stroke-width="2"/>' +
+  '<line x1="15" y1="90" x2="250" y2="90" stroke="#a67c00" stroke-width="2"/><text x="225" y="85" font-size="12" fill="#a67c00">sumbu-x</text><text x="70" y="45" font-size="12">y = √x</text></svg>';
+
+var SLIDES = [
+{ t: 'Pengantar Integral Fungsi Aljabar',
+  pts: ['Integral adalah operasi kebalikan dari turunan.', 'Dipakai untuk mencari fungsi asal, luas daerah, dan volume.', 'Cakupan: tak tentu, substitusi, parsial, trigonometri, tentu, luas, volume.', 'Bekal utama: aturan pangkat dan turunan fungsi aljabar.'],
+  f: String.raw`$$\frac{d}{dx}\left(\frac{x^{n+1}}{n+1}\right)=x^n$$`,
+  v: 'Peta belajar: Turunan &rarr; Antiturunan &rarr; Integral tak tentu &rarr; Integral tentu &rarr; Luas &amp; Volume.' },
+{ t: 'Integral Tak Tentu',
+  pts: ['$F(x)$ adalah antiturunan $f(x)$ jika $F\'(x)=f(x)$.', 'Hasil selalu memuat konstanta $C$.', 'Hasilnya berupa keluarga fungsi, bukan satu fungsi.', 'Cek hasil dengan menurunkan kembali.'],
+  f: String.raw`$$\int f(x)\,dx=F(x)+C$$`,
+  v: 'Contoh: $x^2+1$, $x^2$, dan $x^2-5$ semuanya antiturunan $2x$; grafiknya sama bentuk, hanya bergeser naik-turun.' },
+{ t: 'Rumus Dasar dan Sifat',
+  pts: ['Naikkan pangkat sebesar 1, lalu bagi dengan pangkat baru.', 'Syarat: $n\\neq -1$.', 'Konstanta pengali boleh keluar dari integral.', 'Integral penjumlahan dapat dipisah suku demi suku.'],
+  f: String.raw`$$\int a x^n\,dx=\frac{a}{n+1}x^{n+1}+C$$`,
+  v: 'Contoh: $\\int (6x^2-4x+5)\\,dx = 2x^3-2x^2+5x+C$. Ubah akar dan pecahan ke bentuk pangkat dahulu.' },
+{ t: 'Metode Substitusi',
+  pts: ['Cari bagian dalam $u=g(x)$ yang turunannya ada di integran.', 'Hitung $du=g\'(x)\\,dx$.', 'Ganti semua $x$ menjadi $u$, integralkan.', 'Kembalikan ke $x$ dan tambahkan $C$.'],
+  f: String.raw`$$\int f(g(x))\,g'(x)\,dx=\int f(u)\,du$$`,
+  v: 'Contoh: $\\int x(x^2+3)^5dx$ dengan $u=x^2+3$ menghasilkan $\\dfrac{(x^2+3)^6}{12}+C$.' },
+{ t: 'Integral Parsial',
+  pts: ['Untuk hasil kali dua fungsi yang tidak cocok disubstitusi.', '$dv$: bagian yang mudah diintegralkan.', '$u$: bagian yang turunannya lebih sederhana.', 'Periksa bahwa $\\int v\\,du$ lebih mudah daripada soal awal.'],
+  f: String.raw`$$\int u\,dv=uv-\int v\,du$$`,
+  v: 'Contoh: $\\int x\\sqrt{x+1}\\,dx$ dengan $u=x$, $dv=\\sqrt{x+1}\\,dx$ menghasilkan $\\tfrac{2}{15}(3x-2)(x+1)^{3/2}+C$.' },
+{ t: 'Integral Fungsi Trigonometri Dasar',
+  pts: ['Turunan sinus adalah kosinus; saat diintegralkan arahnya dibalik.', '$\\int \\sin x\\,dx=-\\cos x+C$ dan $\\int \\cos x\\,dx=\\sin x+C$.', '$\\int \\sec^2 x\\,dx=\\tan x+C$.', 'Untuk sudut $ax+b$, hasilnya dibagi $a$; sudut selalu dalam radian.'],
+  f: String.raw`$$\int \sin(ax+b)\,dx=-\frac{1}{a}\cos(ax+b)+C$$`,
+  v: plotSVG({ f: Math.sin, lo: 0, hi: Math.PI, xmin: -0.5, xmax: 3.8, tl: ['0', 'π'], lf: 'y = sin x', lpf: 0.5, alt: 'Daerah di bawah kurva sinus' }) + '<p class="text-sm mt-1">Luas satu gelombang: $\\int_0^\\pi \\sin x\\,dx=\\big[-\\cos x\\big]_0^\\pi=2$.</p>' },
+{ t: 'Teknik Integral Trigonometri',
+  pts: ['Pangkat genap: $\\sin^2x=\\tfrac{1-\\cos 2x}{2}$ dan $\\cos^2x=\\tfrac{1+\\cos 2x}{2}$.', 'Perkalian sudut berbeda diubah menjadi jumlah: $\\sin A\\cos B=\\tfrac12[\\sin(A+B)+\\sin(A-B)]$.', 'Bentuk $\\sin^nx\\cos x$ memakai substitusi $u=\\sin x$.', 'Pangkat ganjil: sisakan satu faktor, sisanya diubah dengan $\\sin^2x+\\cos^2x=1$.'],
+  f: String.raw`$$\int \sin^2x\,dx=\frac{x}{2}-\frac{\sin 2x}{4}+C$$`,
+  v: 'Contoh: $\\int \\sin^2x\\cos x\\,dx$ dengan $u=\\sin x$ menghasilkan $\\tfrac13\\sin^3x+C$. Contoh lain: $\\int \\sin 3x\\cos x\\,dx=-\\tfrac{\\cos 4x}{8}-\\tfrac{\\cos 2x}{4}+C$.' },
+{ t: 'Integral Tentu dan Teorema Dasar Kalkulus',
+  pts: ['Memiliki batas bawah $a$ dan batas atas $b$.', 'Hasilnya bilangan, tidak ada konstanta $C$.', 'Hitung antiturunan, lalu substitusikan batas atas dikurangi batas bawah.', 'Secara geometri: luas bertanda di bawah kurva.'],
+  f: String.raw`$$\int_a^b f(x)\,dx=F(b)-F(a)$$`,
+  v: 'Contoh: $\\int_1^3(3x^2-2x+1)\\,dx=\\big[x^3-x^2+x\\big]_1^3=21-1=20$.' },
+{ t: 'Sifat-sifat Integral Tentu',
+  pts: ['Batas sama: $\\int_a^a f\\,dx=0$.', 'Tukar batas mengubah tanda.', 'Konstanta pengali boleh dikeluarkan; penjumlahan boleh dipisah.', 'Interval boleh dipecah di titik tengah $b$.'],
+  f: String.raw`$$\int_a^b f\,dx+\int_b^c f\,dx=\int_a^c f\,dx$$`,
+  v: 'Catatan: $\\int_a^b f\\,dx=-\\int_b^a f\\,dx$. Berguna bila kurva memotong sumbu-$x$ dan daerah harus dipecah.' },
+{ t: 'Luas Daerah: Satu Kurva',
+  pts: ['Di atas sumbu-$x$: $L=\\int f\\,dx$.', 'Di bawah sumbu-$x$: $L=-\\int f\\,dx$.', 'Jika memotong sumbu-$x$, pecah di titik potongnya.', 'Luas selalu bernilai positif.'],
+  f: String.raw`$$L=\int_a^b |f(x)|\,dx$$`,
+  v: svgLuas1 + '<p class="text-sm mt-1">Daerah di bawah $y=x^2$ pada $[0,2]$: $L=\\int_0^2x^2dx=\\tfrac83$.</p>' },
+{ t: 'Luas Daerah: Dua Kurva',
+  pts: ['Cari titik potong dari $f(x)=g(x)$ sebagai batas.', 'Tentukan kurva atas $f$ dan kurva bawah $g$.', 'Integralkan selisih atas dikurangi bawah.', 'Bila posisi kurva bertukar, pecah per interval.'],
+  f: String.raw`$$L=\int_a^b \big[f(x)-g(x)\big]\,dx$$`,
+  v: svgLuas2 + '<p class="text-sm mt-1">Antara $y=x$ dan $y=x^2$: $L=\\int_0^1(x-x^2)dx=\\tfrac16$.</p>' },
+{ t: 'Volume Benda Putar (Sumbu-x, 360°)',
+  pts: ['Cakram (satu kurva): jari-jari $f(x)$.', 'Cincin (dua kurva): jari-jari luar $f(x)$, dalam $g(x)$.', 'Kuadratkan dulu masing-masing, baru dikurangkan.', 'Batas integrasi dari batas daerah atau titik potong.'],
+  f: String.raw`$$V=\pi\int_a^b\big([f(x)]^2-[g(x)]^2\big)\,dx$$`,
+  v: svgVol + '<p class="text-sm mt-1">Cakram: $V=\\pi\\int_0^4 (\\sqrt{x})^2dx=8\\pi$.</p>' },
+{ t: 'Rangkuman dan Strategi Belajar',
+  pts: ['Aturan pangkat dan rumus trigonometri dasar adalah fondasi semua teknik.', 'Substitusi bila ada fungsi dalam beserta turunannya; parsial untuk hasil kali.', 'Luas: atas dikurangi bawah. Volume: kuadratkan dulu.', 'Selalu periksa hasil dengan turunan dan perhatikan batas integral.'],
+  f: String.raw`$$\int_a^b f\,dx=F(b)-F(a),\quad V=\pi\int_a^b [f]^2dx$$`,
+  v: 'Langkah berikutnya: buka Tab <b>Bank Soal</b> dan kerjakan 10 soal dari mudah sampai HOTS.' }
+];
+
+/* ---------- DATA SOAL (10 soal) ---------- */
+var SOAL = [
+{ lv: 'mudah', tp: 'tak', q: String.raw`Tentukan $\int (4x^3-6x^2+2x-7)\,dx$.`, a: String.raw`<ol><li>Integralkan tiap suku dengan aturan pangkat: $$\int 4x^3dx=x^4,\quad \int 6x^2dx=2x^3,\quad \int 2x\,dx=x^2,\quad \int 7\,dx=7x$$</li><li>Gabungkan: $$x^4-2x^3+x^2-7x+C$$</li></ol>` },
+{ lv: 'mudah', tp: 'tak', q: String.raw`Tentukan $\int (x^3+3\sqrt{x})\,dx$.`, a: String.raw`<ol><li>Ubah akar: $3\sqrt{x}=3x^{1/2}$.</li><li>$$\int x^3dx=\frac{x^4}{4},\qquad \int 3x^{1/2}dx=3\cdot\frac{x^{3/2}}{3/2}=2x^{3/2}$$</li><li>Hasil: $$\frac{x^4}{4}+2x^{3/2}+C$$</li></ol>` },
+{ lv: 'mudah', tp: 'tentu', q: String.raw`Hitunglah $\int_0^2 (3x^2+2x)\,dx$.`, a: String.raw`<ol><li>Antiturunan: $F(x)=x^3+x^2$.</li><li>$$\Big[x^3+x^2\Big]_0^2=(8+4)-(0+0)$$</li><li>Hasil: $12$.</li></ol>` },
+{ lv: 'mudah', tp: 'anti', q: String.raw`Diketahui $f'(x)=6x-2$ dan $f(1)=5$. Tentukan $f(x)$.`, a: String.raw`<ol><li>Integralkan: $$f(x)=\int (6x-2)\,dx=3x^2-2x+C$$</li><li>Gunakan $f(1)=5$: $$3(1)^2-2(1)+C=5 \Rightarrow 1+C=5 \Rightarrow C=4$$</li><li>Jadi $$f(x)=3x^2-2x+4$$</li></ol>` },
+{ lv: 'sedang', tp: 'subs', q: String.raw`Tentukan $\int x\sqrt{x^2+9}\,dx$.`, a: String.raw`<ol><li>Misal $u=x^2+9$, maka $du=2x\,dx$ sehingga $x\,dx=\tfrac12du$.</li><li>$$\int x\sqrt{x^2+9}\,dx=\tfrac12\int u^{1/2}du=\tfrac12\cdot\tfrac23u^{3/2}+C$$</li><li>Hasil: $$\tfrac13(x^2+9)^{3/2}+C$$</li></ol>` },
+{ lv: 'sedang', tp: 'parsial', q: String.raw`Tentukan $\int x(x+3)^4\,dx$ dengan integral parsial.`, a: String.raw`<ol><li>Pilih $u=x$, $du=dx$; $dv=(x+3)^4dx$, $v=\tfrac15(x+3)^5$.</li><li>$$\int x(x+3)^4dx=\tfrac15x(x+3)^5-\tfrac15\int (x+3)^5dx$$</li><li>$$=\tfrac15x(x+3)^5-\tfrac1{30}(x+3)^6+C$$</li><li>Sederhanakan: $$\tfrac1{30}(x+3)^5\big[6x-(x+3)\big]+C=\tfrac{1}{30}(x+3)^5(5x-3)+C$$</li></ol>` },
+{ lv: 'sedang', tp: 'luas', q: String.raw`Hitunglah luas daerah yang dibatasi oleh kurva $y=x^2-4x$ dan sumbu-$x$.`, a: String.raw`<ol><li>Titik potong sumbu-$x$: $x^2-4x=0 \Rightarrow x=0$ atau $x=4$.</li><li>Pada $[0,4]$ kurva berada di bawah sumbu-$x$ (uji $x=2$: $y=-4$), sehingga $$L=-\int_0^4(x^2-4x)\,dx$$</li><li>$$=-\Big[\tfrac13x^3-2x^2\Big]_0^4=-\Big(\tfrac{64}{3}-32\Big)=\tfrac{32}{3}$$</li></ol><p>Luas = $\dfrac{32}{3}$ satuan luas.</p>` },
+{ lv: 'sedang', tp: 'volume', q: String.raw`Daerah yang dibatasi oleh $y=x^2$, sumbu-$x$, dan garis $x=2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.`, a: String.raw`<ol><li>Metode cakram dengan $f(x)=x^2$ pada $[0,2]$.</li><li>$$V=\pi\int_0^2 (x^2)^2dx=\pi\int_0^2x^4dx$$</li><li>$$=\pi\Big[\tfrac15x^5\Big]_0^2=\pi\cdot\tfrac{32}{5}$$</li></ol><p>$V=\dfrac{32}{5}\pi$ satuan volume.</p>` },
+{ lv: 'sulit', tp: 'luas', q: String.raw`(HOTS) Diketahui $k>0$. Daerah yang dibatasi oleh kurva $y=x^2$ dan garis $y=kx$ memiliki luas $\dfrac92$ satuan luas. Tentukan nilai $k$.`, a: String.raw`<ol><li>Titik potong: $x^2=kx \Rightarrow x=0$ atau $x=k$.</li><li>Pada $[0,k]$ garis berada di atas parabola, sehingga $$L=\int_0^k (kx-x^2)\,dx=\Big[\tfrac k2x^2-\tfrac13x^3\Big]_0^k$$</li><li>$$L=\tfrac{k^3}{2}-\tfrac{k^3}{3}=\tfrac{k^3}{6}$$</li><li>Samakan dengan $\tfrac92$: $$\tfrac{k^3}{6}=\tfrac92 \Rightarrow k^3=27 \Rightarrow k=3$$</li></ol>` },
+{ lv: 'sulit', tp: 'volume', q: String.raw`(HOTS) Daerah yang dibatasi oleh kurva $y=\sqrt{x}$ dan $y=x^2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.`, a: String.raw`<ol><li>Titik potong: $\sqrt{x}=x^2$. Kuadratkan: $x=x^4 \Rightarrow x(x^3-1)=0 \Rightarrow x=0$ atau $x=1$.</li><li>Pada $[0,1]$: uji $x=\tfrac14$, $\sqrt{x}=\tfrac12$ dan $x^2=\tfrac1{16}$. Jadi $y=\sqrt{x}$ di luar, $y=x^2$ di dalam.</li><li>Metode cincin: $$V=\pi\int_0^1\big[(\sqrt{x})^2-(x^2)^2\big]dx=\pi\int_0^1 (x-x^4)\,dx$$</li><li>$$=\pi\Big[\tfrac12x^2-\tfrac15x^5\Big]_0^1=\pi\Big(\tfrac12-\tfrac15\Big)=\tfrac{3}{10}\pi$$</li></ol><p>$V=\dfrac{3}{10}\pi$ satuan volume.</p>` },
+{ lv: 'mudah', tp: 'anti', q: String.raw`Tentukan antiderivatif umum dari $f(x)=8x^3-9x^2+4x-5$.`, a: String.raw`<ol><li>Antiderivatifkan tiap suku: $$8\cdot\frac{x^4}{4}-9\cdot\frac{x^3}{3}+4\cdot\frac{x^2}{2}-5x$$</li><li>Hasil: $$F(x)=2x^4-3x^3+2x^2-5x+C$$</li></ol>` },
+{ lv: 'sedang', tp: 'anti', q: String.raw`Kecepatan sebuah benda dinyatakan oleh $v(t)=3t^2-4t+5$ m/s. Jika posisi awalnya $s(0)=2$ m, tentukan posisi benda saat $t=2$ detik.`, a: String.raw`<ol><li>Posisi adalah antiderivatif kecepatan: $$s(t)=\int (3t^2-4t+5)\,dt=t^3-2t^2+5t+C$$</li><li>$s(0)=2 \Rightarrow C=2$, sehingga $s(t)=t^3-2t^2+5t+2$.</li><li>$$s(2)=8-8+10+2=12$$</li></ol><p>Posisi benda saat $t=2$ adalah $12$ m.</p>` },
+{ lv: 'sedang', tp: 'tak', q: String.raw`Tentukan $\int (2x-1)(x+3)\,dx$.`, a: String.raw`<ol><li>Jabarkan dahulu: $(2x-1)(x+3)=2x^2+6x-x-3=2x^2+5x-3$.</li><li>$$\int (2x^2+5x-3)\,dx=\frac23x^3+\frac52x^2-3x+C$$</li></ol>` },
+{ lv: 'mudah', tp: 'subs', q: String.raw`Tentukan $\int (4x+3)^5\,dx$.`, a: String.raw`<ol><li>Misal $u=4x+3$, maka $du=4\,dx$ sehingga $dx=\tfrac14du$.</li><li>$$\tfrac14\int u^5\,du=\tfrac14\cdot\frac{u^6}{6}+C=\frac{u^6}{24}+C$$</li><li>Hasil: $$\frac{(4x+3)^6}{24}+C$$</li></ol>` },
+{ lv: 'sulit', tp: 'subs', q: String.raw`(HOTS) Tentukan $\int x^3\sqrt{x^2+1}\,dx$.`, a: String.raw`<ol><li>Misal $u=x^2+1$, maka $du=2x\,dx$ dan $x^2=u-1$.</li><li>Pecah $x^3\,dx=x^2\cdot x\,dx=(u-1)\cdot\tfrac12du$, sehingga $$\tfrac12\int (u-1)u^{1/2}du=\tfrac12\int \big(u^{3/2}-u^{1/2}\big)du$$</li><li>$$=\tfrac12\Big(\tfrac25u^{5/2}-\tfrac23u^{3/2}\Big)+C=\tfrac15u^{5/2}-\tfrac13u^{3/2}+C$$</li><li>Kembalikan ke $x$ dan faktorkan: $$\tfrac1{15}(x^2+1)^{3/2}\big[3(x^2+1)-5\big]+C=\tfrac1{15}(x^2+1)^{3/2}(3x^2-2)+C$$</li></ol>` },
+{ lv: 'sedang', tp: 'parsial', q: String.raw`Tentukan $\int x(x-1)^3\,dx$ dengan integral parsial.`, a: String.raw`<ol><li>Pilih $u=x$, $du=dx$; $dv=(x-1)^3dx$, $v=\tfrac14(x-1)^4$.</li><li>$$\int x(x-1)^3dx=\tfrac14x(x-1)^4-\tfrac14\int (x-1)^4dx$$</li><li>$$=\tfrac14x(x-1)^4-\tfrac1{20}(x-1)^5+C$$</li><li>Sederhanakan: $$\tfrac1{20}(x-1)^4\big[5x-(x-1)\big]+C=\tfrac1{20}(x-1)^4(4x+1)+C$$</li></ol>` },
+{ lv: 'sulit', tp: 'parsial', q: String.raw`(HOTS) Hitunglah $\int_0^1 x\sqrt{1-x}\,dx$.`, a: String.raw`<ol><li>Pilih $u=x$, $dv=(1-x)^{1/2}dx$. Karena turunan bagian dalam $(1-x)$ adalah $-1$, maka $v=-\tfrac23(1-x)^{3/2}$.</li><li>$$\int_0^1 x\sqrt{1-x}\,dx=\Big[-\tfrac23x(1-x)^{3/2}\Big]_0^1+\tfrac23\int_0^1 (1-x)^{3/2}dx$$</li><li>Suku pertama bernilai $0-0=0$. Suku kedua: $$\tfrac23\Big[-\tfrac25(1-x)^{5/2}\Big]_0^1=\tfrac23\Big(0+\tfrac25\Big)=\tfrac{4}{15}$$</li><li>Jadi nilainya $\dfrac{4}{15}$.</li></ol>` },
+{ lv: 'mudah', tp: 'tentu', q: String.raw`Hitunglah $\int_1^4 \left(2x+\dfrac{1}{\sqrt{x}}\right)dx$.`, a: String.raw`<ol><li>Tulis $\dfrac1{\sqrt x}=x^{-1/2}$. Antiturunannya: $F(x)=x^2+2x^{1/2}$.</li><li>$$\Big[x^2+2\sqrt{x}\Big]_1^4=(16+4)-(1+2)=17$$</li></ol>` },
+{ lv: 'sedang', tp: 'tentu', q: String.raw`Diketahui $\int_0^3 f(x)\,dx=5$ dan $\int_2^3 f(x)\,dx=2$. Hitunglah $\int_0^2 \big(3f(x)+2\big)dx$.`, a: String.raw`<ol><li>Dengan sifat penjumlahan batas: $$\int_0^2 f(x)\,dx=\int_0^3 f(x)\,dx-\int_2^3 f(x)\,dx=5-2=3$$</li><li>$$\int_0^2 \big(3f(x)+2\big)dx=3\cdot 3+\Big[2x\Big]_0^2=9+4=13$$</li></ol>` },
+{ lv: 'sedang', tp: 'luas', q: String.raw`Hitung luas daerah yang dibatasi oleh kurva $y=x^2-6x+8$ dan sumbu-$x$.`, a: String.raw`<ol><li>Titik potong sumbu-$x$: $(x-2)(x-4)=0 \Rightarrow x=2$ atau $x=4$.</li><li>Pada $[2,4]$ kurva di bawah sumbu-$x$ (uji $x=3$: $y=-1$), sehingga $$L=-\int_2^4 (x^2-6x+8)\,dx$$</li><li>$$=-\Big[\tfrac13x^3-3x^2+8x\Big]_2^4=-\Big(\tfrac{16}{3}-\tfrac{20}{3}\Big)=\tfrac43$$</li></ol><p>Luas = $\dfrac43$ satuan luas.</p>` },
+{ lv: 'mudah', tp: 'volume', q: String.raw`Daerah yang dibatasi oleh $y=2x$, sumbu-$x$, dan garis $x=3$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.`, a: String.raw`<ol><li>Metode cakram dengan $f(x)=2x$ pada $[0,3]$.</li><li>$$V=\pi\int_0^3 (2x)^2dx=\pi\int_0^3 4x^2dx=\pi\Big[\tfrac43x^3\Big]_0^3$$</li><li>$$=\pi\cdot 36=36\pi$$</li></ol><p>$V=36\pi$ satuan volume.</p>` },
+{ lv: 'mudah', tp: 'trig', q: String.raw`Tentukan $\int (3\sin x-2\cos x)\,dx$.`, a: String.raw`<ol><li>$$\int 3\sin x\,dx=-3\cos x,\qquad \int 2\cos x\,dx=2\sin x$$</li><li>Hasil: $$-3\cos x-2\sin x+C$$</li></ol>` },
+{ lv: 'mudah', tp: 'trig', q: String.raw`Tentukan $\int \cos(2x+1)\,dx$.`, a: String.raw`<ol><li>Gunakan $\int \cos(ax+b)\,dx=\tfrac1a\sin(ax+b)+C$ dengan $a=2$.</li><li>Hasil: $$\tfrac12\sin(2x+1)+C$$</li></ol>` },
+{ lv: 'sedang', tp: 'trig', q: String.raw`Tentukan $\int \sin^2x\cos x\,dx$.`, a: String.raw`<ol><li>Misal $u=\sin x$, maka $du=\cos x\,dx$.</li><li>$$\int u^2\,du=\tfrac13u^3+C$$</li><li>Hasil: $$\tfrac13\sin^3x+C$$</li></ol>` },
+{ lv: 'sedang', tp: 'trig', q: String.raw`Hitunglah $\int_0^{\pi/6}\cos 3x\,dx$.`, a: String.raw`<ol><li>Antiturunan: $\tfrac13\sin 3x$.</li><li>$$\Big[\tfrac13\sin 3x\Big]_0^{\pi/6}=\tfrac13\sin\tfrac\pi2-\tfrac13\sin 0=\tfrac13$$</li></ol>` },
+{ lv: 'sulit', tp: 'trig', q: String.raw`(HOTS) Tentukan $\int \sin 3x\cos x\,dx$.`, a: String.raw`<ol><li>Ubah hasil kali menjadi jumlah: $$\sin 3x\cos x=\tfrac12\big[\sin 4x+\sin 2x\big]$$</li><li>$$\int \tfrac12(\sin 4x+\sin 2x)\,dx=\tfrac12\Big(-\tfrac{\cos 4x}{4}-\tfrac{\cos 2x}{2}\Big)+C$$</li><li>Hasil: $$-\tfrac{\cos 4x}{8}-\tfrac{\cos 2x}{4}+C$$</li></ol>` },
+{ lv: 'sulit', tp: 'trig', q: String.raw`(HOTS) Hitunglah $\int_0^{\pi/2}\cos^2x\,dx$.`, a: String.raw`<ol><li>Turunkan pangkat: $\cos^2x=\dfrac{1+\cos 2x}{2}$.</li><li>$$\int_0^{\pi/2}\frac{1+\cos 2x}{2}\,dx=\frac12\Big[x+\frac{\sin 2x}{2}\Big]_0^{\pi/2}$$</li><li>$$=\frac12\Big[\Big(\frac\pi2+0\Big)-(0+0)\Big]=\frac\pi4$$</li></ol>` }
+];
+var LABEL = { mudah: 'Mudah', sedang: 'Sedang', sulit: 'Sulit / HOTS' };
+
+/* ---------- VISUALISASI &amp; LATIHAN LUAS DAERAH ---------- */
+function plotSVG(o) {
+  var W = 420, H = 260, m = 34, N = 160, i, x;
+  var f = o.f, g = o.g || function () { return 0; };
+  var ymin = 0, ymax = 0;
+  for (i = 0; i <= N; i++) {
+    x = o.xmin + (o.xmax - o.xmin) * i / N;
+    ymin = Math.min(ymin, f(x), g(x)); ymax = Math.max(ymax, f(x), g(x));
+  }
+  var pad = (ymax - ymin) * 0.1 || 1; ymin -= pad; ymax += pad;
+  if (o.ymin !== undefined) { ymin = o.ymin; ymax = o.ymax; }
+  var sx = function (v) { return (m + (v - o.xmin) / (o.xmax - o.xmin) * (W - 2 * m)).toFixed(1); };
+  var sy = function (v) { return (H - m - (v - ymin) / (ymax - ymin) * (H - 2 * m)).toFixed(1); };
+  var curve = function (fn) {
+    var p = [];
+    for (var k = 0; k <= N; k++) { var xv = o.xmin + (o.xmax - o.xmin) * k / N; p.push(sx(xv) + ',' + sy(fn(xv))); }
+    return p.join(' ');
+  };
+  var upPts = [], loPts = [], M = 100;
+  for (i = 0; i <= M; i++) {
+    x = o.lo + (o.hi - o.lo) * i / M;
+    upPts.push(sx(x) + ',' + sy(Math.max(f(x), g(x))));
+    loPts.unshift(sx(x) + ',' + sy(Math.min(f(x), g(x))));
+  }
+  var axX = (o.xmin <= 0 && o.xmax >= 0) ? sx(0) : m;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || 'Grafik daerah yang diarsir') + '">';
+  if (!o.noShade) s += '<polygon points="' + upPts.concat(loPts).join(' ') + '" fill="rgba(139,26,26,.28)"/>';
+  if (o.extra) s += o.extra(sx, sy);
+  s += '<line x1="' + (m - 10) + '" y1="' + sy(0) + '" x2="' + (W - m + 14) + '" y2="' + sy(0) + '" stroke="#1a1011" stroke-width="1.5"/>';
+  s += '<line x1="' + axX + '" y1="' + (m - 14) + '" x2="' + axX + '" y2="' + (H - m + 10) + '" stroke="#1a1011" stroke-width="1.5"/>';
+  s += '<text x="' + (W - m + 8) + '" y="' + (Number(sy(0)) - 6) + '" font-size="13" fill="#1a1011">x</text>';
+  s += '<text x="' + (Number(axX) + 6) + '" y="' + (m - 6) + '" font-size="13" fill="#1a1011">y</text>';
+  [o.lo, o.hi].forEach(function (v, idx) {
+    s += '<line x1="' + sx(v) + '" y1="' + sy(Math.max(f(v), g(v))) + '" x2="' + sx(v) + '" y2="' + sy(Math.min(f(v), g(v))) + '" stroke="#8b1a1a" stroke-dasharray="4 3"/>';
+    s += '<text x="' + sx(v) + '" y="' + (Number(sy(0)) + 15) + '" font-size="12" text-anchor="middle" fill="#8b1a1a">' + (o.tl ? o.tl[idx] : Math.round(v * 100) / 100) + '</text>';
+  });
+  s += '<polyline points="' + curve(f) + '" fill="none" stroke="#8b1a1a" stroke-width="2.5"/>';
+  if (o.g) s += '<polyline points="' + curve(g) + '" fill="none" stroke="#a67c00" stroke-width="2.5"/>';
+  var lab = function (fn, frac, txt, col) {
+    if (!txt) return '';
+    var xv = o.xmin + (o.xmax - o.xmin) * frac;
+    return '<text x="' + sx(xv) + '" y="' + (Number(sy(fn(xv))) - 8) + '" font-size="13" font-weight="700" text-anchor="middle" fill="' + col + '">' + txt + '</text>';
+  };
+  s += lab(f, o.lpf || 0.85, o.lf, '#8b1a1a') + lab(g, o.lpg || 0.15, o.lg, '#a67c00');
+  return s + '</svg>';
+}
+var VIZ = {
+  atas: { f: function (x) { return x * x; }, lo: 0, hi: 2, xmin: -0.6, xmax: 2.6, lf: 'y = x²', lpf: 0.75, alt: 'Daerah di bawah y = x kuadrat pada 0 sampai 2' },
+  bawah: { f: function (x) { return x * x - 4 * x; }, lo: 0, hi: 4, xmin: -0.6, xmax: 4.6, lf: 'y = x² − 4x', lpf: 0.9, alt: 'Daerah di bawah sumbu x dibatasi y = x kuadrat dikurangi 4x' },
+  memotong: { f: function (x) { return x * x * x - 4 * x; }, lo: -2, hi: 2, xmin: -2.6, xmax: 2.6, lf: 'y = x³ − 4x', lpf: 0.9, alt: 'Kurva pangkat tiga memotong sumbu x' },
+  dua: { f: function (x) { return x + 2; }, g: function (x) { return x * x; }, lo: -1, hi: 2, xmin: -1.8, xmax: 2.8, lf: 'y = x + 2', lg: 'y = x²', lpf: 0.3, lpg: 0.9, alt: 'Daerah di antara garis y = x + 2 dan parabola y = x kuadrat' }
+};
+VIZ.c1 = { f: function (x) { return 6 * x - x * x; }, g: function (x) { return x; }, lo: 0, hi: 5, xmin: -0.6, xmax: 5.8, lf: 'y = 6x − x²', lg: 'y = x', lpf: 0.3, lpg: 0.8, alt: 'Daerah antara y = 6x kurang x kuadrat dan y = x' };
+VIZ.v1 = { f: function (x) { return 2 * x; }, g: function (x) { return x * x; }, lo: 0, hi: 2, xmin: -0.4, xmax: 2.6, lf: 'y = 2x', lg: 'y = x²', lpf: 0.35, lpg: 0.7, alt: 'Daerah antara y = 2x dan y = x kuadrat' };
+VIZ.e1 = { f: function (x) { return x * x - 4 * x + 3; }, lo: 1, hi: 3, xmin: -0.5, xmax: 4.5, lf: 'y = x² − 4x + 3', lpf: 0.88, alt: 'Daerah di bawah sumbu x oleh parabola' };
+VIZ.e2 = { f: function (x) { return x * x * x - x; }, lo: -1, hi: 1, xmin: -1.5, xmax: 1.5, lf: 'y = x³ − x', lpf: 0.92, alt: 'Daerah dibatasi kurva pangkat tiga dan sumbu x' };
+VIZ.e3 = { f: function (x) { return Math.sqrt(x); }, g: function (x) { return x * x; }, lo: 0, hi: 1, xmin: 0, xmax: 1.3, lf: 'y = √x', lg: 'y = x²', lpf: 0.5, lpg: 0.9, alt: 'Daerah antara akar x dan x kuadrat' };
+VIZ.w1 = { f: function (x) { return x + 1; }, lo: 0, hi: 2, xmin: -0.5, xmax: 2.6, lf: 'y = x + 1', lpf: 0.8, alt: 'Daerah di bawah y = x + 1' };
+VIZ.w2 = { f: function (x) { return x; }, g: function (x) { return x * x; }, lo: 0, hi: 1, xmin: -0.2, xmax: 1.3, lf: 'y = x', lg: 'y = x²', lpf: 0.4, lpg: 0.85, alt: 'Daerah antara y = x dan y = x kuadrat' };
+VIZ.sin1 = { f: Math.sin, lo: 0, hi: Math.PI, xmin: -0.5, xmax: 3.8, tl: ['0', 'π'], lf: 'y = sin x', lpf: 0.5, alt: 'Daerah di bawah kurva sinus pada 0 sampai pi' };
+VIZ.cos1 = { f: Math.cos, lo: 0, hi: Math.PI, xmin: -0.5, xmax: 3.8, tl: ['0', 'π'], lf: 'y = cos x', lpf: 0.15, alt: 'Daerah antara kurva kosinus dan sumbu x pada 0 sampai pi' };
+VIZ.w3 = { f: function (x) { return x * x; }, lo: 1, hi: 2, xmin: -0.2, xmax: 2.5, lf: 'y = x²', lpf: 0.85, alt: 'Daerah di bawah y = x kuadrat pada 1 sampai 2' };
+function genTr() {
+  var t = rnd(1, 3), o = {}, a, b, m, r;
+  if (t === 1) {
+    var nz = [-4, -3, -2, -1, 1, 2, 3, 4, 5, 6];
+    a = nz[rnd(0, 9)]; b = nz[rnd(0, 9)];
+    var f = pl([[a, '\\sin x'], [b, '\\cos x']]);
+    o.ans = a + b;
+    o.q = 'Hitunglah $\\int_0^{\\pi/2}\\big(' + f + '\\big)\\,dx$.';
+    o.sol = '<ol><li>Antiturunan: $$\\int (' + f + ')\\,dx=' + pl([[-a, '\\cos x'], [b, '\\sin x']]) + '+C$$</li>' +
+      '<li>Substitusi batas ($\\sin\\tfrac\\pi2=1$, $\\cos\\tfrac\\pi2=0$, $\\sin 0=0$, $\\cos 0=1$): $$\\Big[' + pl([[-a, '\\cos x'], [b, '\\sin x']]) + '\\Big]_0^{\\pi/2}=\\big(-(' + a + ')\\cdot 0+(' + b + ')\\cdot 1\\big)-\\big(-(' + a + ')\\cdot 1+(' + b + ')\\cdot 0\\big)=' + o.ans + '$$</li></ol>';
+  } else if (t === 2) {
+    m = rnd(2, 4); r = rnd(1, 5); a = m * r;
+    var rs = r === 1 ? '' : String(r);
+    o.ans = r;
+    o.q = 'Hitunglah $\\int_0^{\\pi/' + (2 * m) + '} ' + a + '\\cos ' + m + 'x\\,dx$.';
+    o.sol = '<ol><li>$$\\int ' + a + '\\cos ' + m + 'x\\,dx=\\frac{' + a + '}{' + m + '}\\sin ' + m + 'x+C=' + rs + '\\sin ' + m + 'x+C$$</li>' +
+      '<li>Pada batas atas, $' + m + '\\cdot\\tfrac{\\pi}{' + (2 * m) + '}=\\tfrac\\pi2$: $$\\Big[' + rs + '\\sin ' + m + 'x\\Big]_0^{\\pi/' + (2 * m) + '}=' + rs + '\\sin\\tfrac\\pi2-' + rs + '\\sin 0=' + r + '$$</li></ol>';
+  } else {
+    m = rnd(2, 4); r = rnd(1, 5); a = m * r;
+    var rs2 = r === 1 ? '' : String(r);
+    o.ans = 2 * r;
+    o.q = 'Hitunglah $\\int_0^{\\pi/' + m + '} ' + a + '\\sin ' + m + 'x\\,dx$.';
+    o.sol = '<ol><li>$$\\int ' + a + '\\sin ' + m + 'x\\,dx=-\\frac{' + a + '}{' + m + '}\\cos ' + m + 'x+C=-' + rs2 + '\\cos ' + m + 'x+C$$</li>' +
+      '<li>Pada batas atas, $' + m + '\\cdot\\tfrac{\\pi}{' + m + '}=\\pi$: $$\\Big[-' + rs2 + '\\cos ' + m + 'x\\Big]_0^{\\pi/' + m + '}=-' + rs2 + '\\cos\\pi+' + rs2 + '\\cos 0=' + r + '+' + r + '=' + (2 * r) + '$$</li></ol>';
+  }
+  return o;
+}
+function solidSVG(o) {
+  var W = 420, H = 230, m = 30, a = o.lo, b = o.hi, f = o.f, g = o.g || null, i, x, ymax = 0;
+  for (i = 0; i <= 60; i++) ymax = Math.max(ymax, f(a + (b - a) * i / 60));
+  var oy = H / 2, ky = (oy - 22) / (ymax * 1.05), kx = (W - 2 * m) / (b - a), ex = 0.28;
+  var sx = function (v) { return m + (v - a) * kx; }, sy = function (v) { return oy - v * ky; };
+  var prof = function (fn, sgn) { var p = []; for (var k = 0; k <= 60; k++) { var xv = a + (b - a) * k / 60; p.push(sx(xv).toFixed(1) + ',' + sy(sgn * fn(xv)).toFixed(1)); } return p; };
+  var up = prof(f, 1), dn = prof(f, -1).reverse();
+  var ell = function (xv, r, fill, stroke, dash) {
+    return '<ellipse cx="' + sx(xv).toFixed(1) + '" cy="' + oy + '" rx="' + Math.max(0.5, ex * r * ky).toFixed(1) + '" ry="' + (r * ky).toFixed(1) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="2"' + (dash ? ' stroke-dasharray="5 3"' : '') + '/>';
+  };
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Benda putar hasil rotasi 360 derajat mengelilingi sumbu x">';
+  s += '<polygon points="' + up.concat(dn).join(' ') + '" fill="rgba(212,160,23,.35)" stroke="#1a1011" stroke-width="2"/>';
+  if (f(a) > 1e-6) s += ell(a, f(a), 'rgba(212,160,23,.22)', '#1a1011', true);
+  if (g) {
+    s += '<polyline points="' + prof(g, 1).join(' ') + '" fill="none" stroke="#a67c00" stroke-width="1.6" stroke-dasharray="5 3"/>';
+    s += '<polyline points="' + prof(g, -1).join(' ') + '" fill="none" stroke="#a67c00" stroke-width="1.6" stroke-dasharray="5 3"/>';
+  }
+  s += ell(b, f(b), 'rgba(139,26,26,.30)', '#8b1a1a', false);
+  if (g && g(b) > 1e-6) s += ell(b, g(b), '#ffffff', '#a67c00', false);
+  s += '<line x1="' + (m - 14) + '" y1="' + oy + '" x2="' + (W - 8) + '" y2="' + oy + '" stroke="#a67c00" stroke-width="2"/>';
+  s += '<text x="' + (W - 62) + '" y="' + (oy - 6) + '" font-size="12" fill="#a67c00">sumbu-x</text>';
+  return s + '</svg>';
+}
+/* ---------- LATIHAN DINAMIS UMUM (dipakai subbab Antiderivatif) ---------- */
+var DYN = {};
+/* ---------- INPUT JAWABAN: keypad layar + pembaca pecahan/minus ---------- */
+function parseAns(raw) {
+  var s = String(raw).trim().replace(/[\u2212\u2013\u2014]/g, '-').replace(/,/g, '.');
+  var mx = s.match(/^([+-]?)(\d+)\s+(\d+)\/(\d+)$/);
+  if (mx) {
+    var dd = +mx[4]; if (!dd) return null;
+    var val = +mx[2] + (+mx[3]) / dd;
+    return { v: mx[1] === '-' ? -val : val, tex: (mx[1] === '-' ? '-' : '') + mx[2] + '\\frac{' + mx[3] + '}{' + mx[4] + '}' };
+  }
+  s = s.replace(/\s+/g, '');
+  var m = s.match(/^([+-]?(?:\d+(?:\.\d+)?|\.\d+))(?:\/([+-]?(?:\d+(?:\.\d+)?|\.\d+)))?$/);
+  if (!m) return null;
+  var a = parseFloat(m[1]), b = m[2] === undefined ? 1 : parseFloat(m[2]);
+  if (!b) return null;
+  var tex;
+  if (m[2] === undefined) tex = m[1].replace(/^\+/, '');
+  else tex = (((a < 0) !== (b < 0)) ? '-' : '') + '\\frac{' + Math.abs(a) + '}{' + Math.abs(b) + '}';
+  return { v: a / b, tex: tex };
+}
+function updPrev(id) {
+  var el = document.getElementById(id), pv = document.getElementById(id + 'Pv');
+  if (!el || !pv) return;
+  var raw = el.value.trim();
+  if (!raw || /[\/.\-]$/.test(raw)) { pv.textContent = ''; return; }
+  var r = parseAns(raw);
+  if (!r) { pv.textContent = 'Format belum terbaca. Contoh: 12, -3/4, 2.5'; return; }
+  pv.textContent = 'Terbaca: $' + r.tex + '$';
+  typeset(pv);
+}
+function ansTools(id) {
+  var keys = ['7', '8', '9', '\u232B', '4', '5', '6', 'C', '1', '2', '3', '/', '\u00B1', '0', '.', 'OK'];
+  var s = '<div id="' + id + 'Pad" class="ans-pad no-print">';
+  keys.forEach(function (k) {
+    s += '<button type="button" class="ans-key' + (k === 'OK' ? ' ok' : (/[0-9]/.test(k) ? '' : ' op')) + '" onmousedown="event.preventDefault()" onclick="padKey(\'' + id + '\',\'' + k + '\')">' + k + '</button>';
+  });
+  return s + '</div><p id="' + id + 'Pv" class="text-sm mt-1" aria-live="polite"></p>';
+}
+function padKey(id, k) {
+  var el = document.getElementById(id), v = el.value;
+  if (k === 'OK') { var f = window[el.dataset.okFn]; if (f) f(el.dataset.okArg); return; }
+  if (k === '\u232B') v = v.slice(0, -1);
+  else if (k === 'C') v = '';
+  else if (k === '\u00B1') v = v.charAt(0) === '-' ? v.slice(1) : '-' + v;
+  else v += k;
+  el.value = v; updPrev(id);
+}
+function toggleKeypad(id) {
+  var pad = document.getElementById(id + 'Pad'), shown = window.getComputedStyle(pad).display !== 'none';
+  pad.classList.toggle('hide', shown); pad.classList.toggle('force', !shown);
+  syncAnsMode();
+}
+function syncAnsMode() {
+  document.querySelectorAll('.ans-in').forEach(function (el) {
+    var pad = document.getElementById(el.id + 'Pad');
+    el.setAttribute('inputmode', pad && window.getComputedStyle(pad).display !== 'none' ? 'none' : 'decimal');
+  });
+}
+function dynCard(p, title, intro) {
+  var q = "'" + p + "'";
+  return card('c-contoh', title, '<p class="mb-2">' + intro + '</p><div id="' + p + 'Body"></div>' +
+    '<div class="mt-3 flex flex-wrap gap-2 items-center no-print"><label for="' + p + 'In" class="font-semibold">Jawabanmu:</label>' +
+    '<input id="' + p + 'In" type="text" inputmode="decimal" autocomplete="off" placeholder="mis. 12, -3/4" class="ans-in border border-slate-300 rounded-lg px-3 py-1.5 w-40 bg-white" data-ok-fn="dynCheck" data-ok-arg="' + p + '" oninput="updPrev(\'' + p + 'In\')" onkeydown="if(event.key===\'Enter\')dynCheck(' + q + ')">' +
+    '<button class="btn" onclick="dynCheck(' + q + ')">Periksa</button><button class="btn" onclick="dynShow(' + q + ')">Lihat Pembahasan</button><button class="btn btn-teal" onclick="dynNew(' + q + ')">Soal Baru</button><button type="button" class="btn" onclick="toggleKeypad(\'' + p + 'In\')">Keypad</button></div>' + ansTools(p + 'In') +
+    '<p id="' + p + 'Fb" class="mt-2 font-semibold" aria-live="polite"></p><p id="' + p + 'Score" class="text-sm text-slate-600"></p><div id="' + p + 'Sol"></div>');
+}
+function dynNew(p) {
+  var d = DYN[p]; d.cur = d.gen(); d.cur.counted = false;
+  var box = document.getElementById(p + 'Body');
+  box.innerHTML = '<p class="mb-2"><b>Soal:</b> ' + d.cur.q + '</p>' + (d.cur.fig || '');
+  document.getElementById(p + 'In').value = '';
+  document.getElementById(p + 'InPv').textContent = '';
+  document.getElementById(p + 'Fb').textContent = '';
+  document.getElementById(p + 'Sol').innerHTML = '';
+  typeset(box);
+}
+function dynCheck(p) {
+  var d = DYN[p], fb = document.getElementById(p + 'Fb');
+  var raw = document.getElementById(p + 'In').value.trim();
+  if (!raw) { fb.style.color = '#8a4b06'; fb.textContent = 'Isi jawabanmu dulu.'; return; }
+  var pa = parseAns(raw);
+  if (!pa) { fb.style.color = '#8a4b06'; fb.textContent = 'Format belum terbaca. Contoh: 12, -3/4, atau 2.5.'; return; }
+  var ok = Math.abs(pa.v - d.cur.ans) < 0.02;
+  if (!d.cur.counted) { d.cur.counted = true; d.t++; if (ok) d.b++; }
+  fb.style.color = ok ? '#116a3a' : '#9b1c1c';
+  fb.textContent = ok ? 'Benar! Jawabannya ' + (d.cur.disp || d.cur.ans) + '.' : 'Belum tepat. Periksa kembali perhitunganmu, atau buka pembahasan.';
+  document.getElementById(p + 'Score').textContent = 'Skor: ' + d.b + ' benar dari ' + d.t + ' soal.';
+}
+function dynShow(p) {
+  var d = DYN[p], el = document.getElementById(p + 'Sol');
+  el.innerHTML = '<div class="card c-rumus"><h4>Pembahasan</h4>' + d.cur.sol + '<p><b>Jawaban: ' + (d.cur.disp || d.cur.ans) + '</b></p></div>';
+  typeset(el);
+}
+function genAn() {
+  var t = rnd(1, 3), o = {};
+  var nz = [-3, -2, -1, 1, 2, 3];
+  if (t === 2) {
+    var n = nz[rnd(0, 5)], r = rnd(-4, 4), a = rnd(-2, 3), b = rnd(-5, 5), c = rnd(1, 4);
+    var f = pl([[2 * n, 'x'], [r, '']]), s0 = n * a * a + r * a, C = b - s0;
+    o.ans = n * c * c + r * c + C;
+    o.q = 'Gradien garis singgung suatu kurva $y=F(x)$ di setiap titik adalah $F\'(x)=' + f + '$ dan kurva melalui titik $(' + a + ',' + b + ')$. Tentukan nilai $F(' + c + ')$.';
+    o.sol = '<ol><li>$$F(x)=\\int (' + f + ')\\,dx=' + pl([[n, 'x^2'], [r, 'x']]) + '+C$$</li>' +
+      '<li>Kurva melalui $(' + a + ',' + b + ')$, jadi $F(' + a + ')=' + b + '$: $$' + pl([[n * a * a, ''], [r * a, ''], [1, 'C']]).replace(/^(\d+)/, '$1') + '=' + b + ' \\Rightarrow C=' + b + '-(' + s0 + ')=' + C + '$$</li>' +
+      '<li>$$F(x)=' + pl([[n, 'x^2'], [r, 'x'], [C, '']]) + '$$</li>' +
+      '<li>$$F(' + c + ')=' + pl([[n * c * c, ''], [r * c, ''], [C, '']]) + '=' + o.ans + '$$</li></ol>';
+  } else {
+    var m = rnd(1, 3), n2 = nz[rnd(0, 5)], r2 = rnd(-4, 4), k = rnd(-5, 5), T = rnd(1, 3);
+    var gerak = (t === 3), v = gerak ? 't' : 'x';
+    var f2 = pl([[3 * m, v + '^2'], [2 * n2, v], [r2, '']]), F0 = pl([[m, v + '^3'], [n2, v + '^2'], [r2, v]]);
+    o.ans = m * T * T * T + n2 * T * T + r2 * T + k;
+    o.q = gerak
+      ? 'Sebuah benda bergerak lurus dengan kecepatan $v(t)=' + f2 + '$ m/s. Jika posisi awal benda $s(0)=' + k + '$ m, tentukan posisi benda (dalam meter) saat $t=' + T + '$ detik. (Ingat: $s\'(t)=v(t)$.)'
+      : 'Diketahui $F\'(x)=' + f2 + '$ dan $F(0)=' + k + '$. Tentukan nilai $F(' + T + ')$.';
+    var L = gerak ? 's' : 'F';
+    o.sol = '<ol><li>Antiderivatifkan: $$' + L + '(' + v + ')=\\int (' + f2 + ')\\,d' + v + '=' + F0 + '+C$$</li>' +
+      '<li>Dari $' + L + '(0)=' + k + '$ diperoleh $C=' + k + '$, sehingga $$' + L + '(' + v + ')=' + pl([[m, v + '^3'], [n2, v + '^2'], [r2, v], [k, '']]) + '$$</li>' +
+      '<li>$$' + L + '(' + T + ')=' + pl([[m * T * T * T, ''], [n2 * T * T, ''], [r2 * T, ''], [k, '']]) + '=' + o.ans + '$$</li></ol>';
+  }
+  return o;
+}
+function fin(o, num, den) { o.ans = num / den; o.disp = plain(num, den); return o; }
+function genTk() {
+  var t = rnd(1, 3), o = {};
+  if (t === 1) {
+    var m = rnd(1, 4), n = rnd(1, 5), c = (rnd(0, 1) ? 1 : -1) * rnd(1, 5);
+    var cs = c < 0 ? String(c) : '+' + c;
+    var left = pl([[3 * m, 'x^2']]) + '+kx' + cs;
+    o.q = 'Diketahui $\\int (' + left + ')\\,dx=' + pl([[m, 'x^3'], [n, 'x^2'], [c, 'x']]) + '+C$. Tentukan nilai $k$.';
+    o.sol = '<ol><li>Integralkan ruas kiri suku demi suku: $$\\int (' + left + ')\\,dx=' + pl([[m, 'x^3']]) + '+\\frac{k}{2}x^2' + cs + 'x+C$$</li>' +
+      '<li>Samakan koefisien $x^2$ dengan ruas kanan: $$\\frac{k}{2}=' + n + ' \\Rightarrow k=' + (2 * n) + '$$</li></ol>';
+    return fin(o, 2 * n, 1);
+  } else if (t === 2) {
+    var p = rnd(2, 3), n2 = rnd(2, 3), q = rnd(1, 3), num = Math.pow(p + q, n2 + 1), den = p * (n2 + 1);
+    o.q = 'Jika $F(x)=\\int (' + p + 'x+' + q + ')^{' + n2 + '}\\,dx$ dengan konstanta integrasi $C=0$, tentukan nilai $F(1)$.';
+    o.sol = '<ol><li>Gunakan $\\int (ax+b)^n dx=\\frac{(ax+b)^{n+1}}{a(n+1)}$: $$F(x)=\\frac{(' + p + 'x+' + q + ')^{' + (n2 + 1) + '}}{' + den + '}$$</li>' +
+      '<li>$$F(1)=\\frac{(' + (p + q) + ')^{' + (n2 + 1) + '}}{' + den + '}=\\frac{' + num + '}{' + den + '}=' + fr(num, den) + '$$</li></ol>';
+    return fin(o, num, den);
+  } else {
+    var k = 3 * rnd(1, 3), v = 2 * k / 3;
+    o.q = 'Jika $F(x)=\\int ' + k + '\\sqrt{x}\\,dx$ dengan konstanta integrasi $C=0$, tentukan nilai $F(4)$.';
+    o.sol = '<ol><li>$$F(x)=\\int ' + k + 'x^{1/2}\\,dx=' + k + '\\cdot\\frac{x^{3/2}}{3/2}=' + v + 'x^{3/2}$$</li>' +
+      '<li>$$F(4)=' + v + '\\cdot 4^{3/2}=' + v + '\\cdot 8=' + (8 * v) + '$$</li></ol>';
+    return fin(o, 8 * v, 1);
+  }
+}
+function genSb() {
+  var t = rnd(1, 3), o = {}, T = rnd(1, 2), n = rnd(2, 3), num, den, U;
+  if (t === 3) {
+    var p = rnd(2, 4), q = rnd(1, 3);
+    U = p * T + q; num = Math.pow(U, n + 1) - Math.pow(q, n + 1); den = p * (n + 1);
+    o.q = 'Hitunglah $\\int_0^{' + T + '}(' + p + 'x+' + q + ')^{' + n + '}\\,dx$ dengan substitusi.';
+    o.sol = '<ol><li>Misal $u=' + p + 'x+' + q + '$, maka $du=' + p + '\\,dx$ sehingga $dx=\\tfrac1{' + p + '}du$.</li>' +
+      '<li>Ubah batas: $x=0\\Rightarrow u=' + q + '$ dan $x=' + T + '\\Rightarrow u=' + U + '$.</li>' +
+      '<li>$$\\frac1{' + p + '}\\int_{' + q + '}^{' + U + '}u^{' + n + '}du=\\Big[\\frac{u^{' + (n + 1) + '}}{' + den + '}\\Big]_{' + q + '}^{' + U + '}=\\frac{' + Math.pow(U, n + 1) + '-' + Math.pow(q, n + 1) + '}{' + den + '}=' + fr(num, den) + '$$</li></ol>';
+  } else {
+    var c = rnd(1, 3), k = t, inner = 'x^' + (k + 1) + '+' + c, itg = k === 1 ? '2x' : '3x^2';
+    U = Math.pow(T, k + 1) + c; num = Math.pow(U, n + 1) - Math.pow(c, n + 1); den = n + 1;
+    o.q = 'Hitunglah $\\int_0^{' + T + '} ' + itg + '(' + inner + ')^{' + n + '}\\,dx$ dengan substitusi.';
+    o.sol = '<ol><li>Misal $u=' + inner + '$, maka $du=' + itg + '\\,dx$.</li>' +
+      '<li>Ubah batas: $x=0\\Rightarrow u=' + c + '$ dan $x=' + T + '\\Rightarrow u=' + U + '$.</li>' +
+      '<li>$$\\int_{' + c + '}^{' + U + '}u^{' + n + '}du=\\Big[\\frac{u^{' + (n + 1) + '}}{' + den + '}\\Big]_{' + c + '}^{' + U + '}=\\frac{' + Math.pow(U, n + 1) + '-' + Math.pow(c, n + 1) + '}{' + den + '}=' + fr(num, den) + '$$</li></ol>';
+  }
+  return fin(o, num, den);
+}
+function genPr() {
+  var o = {}, n = rnd(1, 2), q = rnd(1, 3), T = rnd(1, 2);
+  var A = T * Math.pow(T + q, n + 1), B = Math.pow(T + q, n + 2) - Math.pow(q, n + 2);
+  var num = A * (n + 2) - B, den = (n + 1) * (n + 2);
+  o.q = 'Hitunglah $\\int_0^{' + T + '} x(x+' + q + ')^{' + n + '}\\,dx$ dengan integral parsial.';
+  o.sol = '<ol><li>Pilih $u=x$ ($du=dx$) dan $dv=(x+' + q + ')^{' + n + '}dx$ ($v=\\tfrac{(x+' + q + ')^{' + (n + 1) + '}}{' + (n + 1) + '}$).</li>' +
+    '<li>$$\\int_0^{' + T + '}x(x+' + q + ')^{' + n + '}dx=\\Big[\\tfrac{x(x+' + q + ')^{' + (n + 1) + '}}{' + (n + 1) + '}\\Big]_0^{' + T + '}-\\tfrac1{' + (n + 1) + '}\\int_0^{' + T + '}(x+' + q + ')^{' + (n + 1) + '}dx$$</li>' +
+    '<li>Suku pertama: $' + fr(A, n + 1) + '$. Suku kedua: $$\\tfrac1{' + (n + 1) + '}\\Big[\\tfrac{(x+' + q + ')^{' + (n + 2) + '}}{' + (n + 2) + '}\\Big]_0^{' + T + '}=\\frac{' + B + '}{' + den + '}=' + fr(B, den) + '$$</li>' +
+    '<li>Hasil: $$' + fr(A, n + 1) + '-' + fr(B, den) + '=' + fr(num, den) + '$$</li></ol>';
+  return fin(o, num, den);
+}
+function genTd() {
+  var t = rnd(1, 3), o = {};
+  if (t === 1) {
+    var p = 3 * rnd(1, 2), q = [-4, -2, 2, 4][rnd(0, 3)], r = rnd(-3, 4), a = rnd(0, 1), b = rnd(2, 3);
+    var f = pl([[p, 'x^2'], [q, 'x'], [r, '']]);
+    var Fv = function (x) { return p / 3 * x * x * x + q / 2 * x * x + r * x; };
+    var ans = Fv(b) - Fv(a);
+    o.q = 'Hitunglah $\\int_{' + a + '}^{' + b + '}(' + f + ')\\,dx$.';
+    o.sol = '<ol><li>Antiturunan: $F(x)=' + pl([[p / 3, 'x^3'], [q / 2, 'x^2'], [r, 'x']]) + '$.</li>' +
+      '<li>$$F(' + b + ')=' + Fv(b) + ',\\qquad F(' + a + ')=' + Fv(a) + '$$</li><li>$$F(' + b + ')-F(' + a + ')=' + Fv(b) + '-(' + Fv(a) + ')=' + ans + '$$</li></ol>';
+    return fin(o, ans, 1);
+  } else if (t === 2) {
+    var A = rnd(1, 6), B = rnd(1, 6), c = rnd(1, 3), d = c + rnd(1, 3), k = rnd(2, 3), m = [1, 2, 4][rnd(0, 2)];
+    var res = k * (A + B) + m * d;
+    o.q = 'Diketahui $\\int_0^{' + c + '}f(x)\\,dx=' + A + '$ dan $\\int_{' + c + '}^{' + d + '}f(x)\\,dx=' + B + '$. Hitunglah $\\int_0^{' + d + '}\\big(' + k + 'f(x)+' + m + '\\big)dx$.';
+    o.sol = '<ol><li>Gabungkan batas: $$\\int_0^{' + d + '}f(x)\\,dx=' + A + '+' + B + '=' + (A + B) + '$$</li>' +
+      '<li>$$\\int_0^{' + d + '}(' + k + 'f(x)+' + m + ')dx=' + k + '\\cdot ' + (A + B) + '+\\Big[' + m + 'x\\Big]_0^{' + d + '}=' + (k * (A + B)) + '+' + (m * d) + '=' + res + '$$</li></ol>';
+    return fin(o, res, 1);
+  } else {
+    var mm = rnd(1, 3), kk = 3 * mm, v = 2 * mm;
+    o.q = 'Hitunglah $\\int_1^4 ' + kk + '\\sqrt{x}\\,dx$.';
+    o.sol = '<ol><li>$$\\int ' + kk + 'x^{1/2}dx=' + v + 'x^{3/2}$$</li><li>$$\\Big[' + v + 'x^{3/2}\\Big]_1^4=' + v + '\\cdot 8-' + v + '\\cdot 1=' + (7 * v) + '$$</li></ol>';
+    return fin(o, 7 * v, 1);
+  }
+}
+function genVl() {
+  var t = rnd(1, 3), o = {}, cfg, num, den;
+  var tail = ' Jawab dalam satuan $\\pi$, yaitu nilai $V/\\pi$ (boleh pecahan seperti 8/3).';
+  if (t === 1) {
+    var p = rnd(1, 3), T = rnd(1, 3), py = pl([[p, 'x']]);
+    cfg = { f: function (x) { return p * x; }, lo: 0, hi: T, xmin: -0.4, xmax: T + 0.8, lf: 'y = ' + py, lpf: 0.5, alt: 'Daerah di bawah garis' };
+    num = p * p * T * T * T; den = 3;
+    o.q = 'Daerah yang dibatasi oleh $y=' + py + '$, sumbu-$x$, dan garis $x=' + T + '$ diputar $360^\\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.' + tail;
+    o.sol = '<ol><li>Metode cakram dengan $f(x)=' + py + '$ pada $[0,' + T + ']$.</li><li>$$V=\\pi\\int_0^{' + T + '}(' + py + ')^2dx=\\pi\\Big[\\tfrac{' + (p * p) + '}{3}x^3\\Big]_0^{' + T + '}=\\pi\\cdot\\tfrac{' + (p * p) + '\\cdot ' + (T * T * T) + '}{3}=' + fr(num, den) + '\\pi$$</li></ol>';
+  } else if (t === 2) {
+    var p2 = rnd(1, 3), py2 = pl([[p2, 'x']]), p5 = Math.pow(p2, 5);
+    cfg = { f: function (x) { return p2 * x; }, g: function (x) { return x * x; }, lo: 0, hi: p2, xmin: -0.4, xmax: p2 + 0.8, lf: 'y = ' + py2, lg: 'y = x²', lpf: 0.3, lpg: 0.75, alt: 'Daerah antara garis dan parabola' };
+    num = 2 * p5; den = 15;
+    o.q = 'Daerah yang dibatasi oleh $y=' + py2 + '$ dan $y=x^2$ diputar $360^\\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.' + tail;
+    o.sol = '<ol><li>Titik potong: $' + py2 + '=x^2 \\Rightarrow x=0$ atau $x=' + p2 + '$. Garis di luar, parabola di dalam.</li>' +
+      '<li>$$V=\\pi\\int_0^{' + p2 + '}\\big[(' + py2 + ')^2-(x^2)^2\\big]dx=\\pi\\Big[\\tfrac{' + (p2 * p2) + '}{3}x^3-\\tfrac15x^5\\Big]_0^{' + p2 + '}$$</li>' +
+      '<li>$$=\\pi\\Big(\\tfrac{' + p5 + '}{3}-\\tfrac{' + p5 + '}{5}\\Big)=' + fr(num, den) + '\\pi$$</li></ol>';
+  } else {
+    var c = rnd(1, 3), T3 = rnd(1, 3);
+    cfg = { f: function (x) { return x + c; }, lo: 0, hi: T3, xmin: -0.4, xmax: T3 + 0.8, lf: 'y = x + ' + c, lpf: 0.5, alt: 'Daerah di bawah garis' };
+    num = Math.pow(T3 + c, 3) - Math.pow(c, 3); den = 3;
+    o.q = 'Daerah yang dibatasi oleh $y=x+' + c + '$, sumbu-$x$, sumbu-$y$, dan garis $x=' + T3 + '$ diputar $360^\\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.' + tail;
+    o.sol = '<ol><li>Metode cakram dengan $f(x)=x+' + c + '$ pada $[0,' + T3 + ']$.</li><li>$$V=\\pi\\int_0^{' + T3 + '}(x+' + c + ')^2dx=\\pi\\Big[\\tfrac13(x+' + c + ')^3\\Big]_0^{' + T3 + '}=\\pi\\cdot\\tfrac{' + Math.pow(T3 + c, 3) + '-' + Math.pow(c, 3) + '}{3}=' + fr(num, den) + '\\pi$$</li></ol>';
+  }
+  o.fig = '<div class="cols2"><figure class="fig"><div>' + plotSVG(cfg) + '</div><figcaption class="text-sm">Daerah yang diputar</figcaption></figure><figure class="fig"><div>' + solidSVG(cfg) + '</div><figcaption class="text-sm">Benda putar</figcaption></figure></div>';
+  return fin(o, num, den);
+}
+function updateC() {
+  var C = +document.getElementById('cSlider').value;
+  var o = {
+    f: function (x) { return x * x + C; }, lo: 0, hi: 1, xmin: -2.5, xmax: 2.5, ymin: -4.5, ymax: 10, noShade: true,
+    lf: 'F(x) = x² ' + (C < 0 ? '− ' : '+ ') + Math.abs(C), lpf: 0.12, alt: 'Keluarga kurva y = x kuadrat ditambah C',
+    extra: function (sx, sy) {
+      var r = '', c, k, p;
+      for (c = -3; c <= 3; c++) {
+        p = [];
+        for (k = 0; k <= 60; k++) { var xv = -2.5 + 5 * k / 60; p.push(sx(xv) + ',' + sy(xv * xv + c)); }
+        r += '<polyline points="' + p.join(' ') + '" fill="none" stroke="#d6c9b0" stroke-width="1.5"/>';
+        r += '<line x1="' + sx(0.55) + '" y1="' + sy(1 + c - 0.9) + '" x2="' + sx(1.45) + '" y2="' + sy(1 + c + 0.9) + '" stroke="' + (c === C ? '#a67c00' : '#e2c9a8') + '" stroke-width="' + (c === C ? 2.5 : 1.2) + '"/>';
+      }
+      return r + '<circle cx="' + sx(1) + '" cy="' + sy(1 + C) + '" r="4.5" fill="#a67c00"/>';
+    }
+  };
+  document.getElementById('cViz').innerHTML = plotSVG(o);
+  document.getElementById('cVal').textContent = C;
+  document.getElementById('cInfo').textContent = 'F(x) = x² ' + (C < 0 ? '− ' : '+ ') + Math.abs(C) + '  →  F\'(x) = 2x, gradien di x = 1 selalu 2';
+}
+function updateK() {
+  var k = +document.getElementById('kSlider').value;
+  document.getElementById('kVal').textContent = k;
+  document.getElementById('kViz').innerHTML = plotSVG({ f: function (x) { return k * x; }, g: function (x) { return x * x; }, lo: 0, hi: k, xmin: -0.5, xmax: k + 1, lf: 'y = ' + k + 'x', lg: 'y = x²', lpf: 0.3, lpg: 0.95, alt: 'Daerah antara parabola dan garis y = kx' });
+  document.getElementById('kInfo').textContent = 'k = ' + k + '  →  L = k³/6 = ' + (k * k * k / 6).toFixed(2) + ' satuan luas';
+}
+function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+function fr(n, d) { var g = gcd(Math.abs(n), d); n /= g; d /= g; return d === 1 ? String(n) : '\\frac{' + n + '}{' + d + '}'; }
+function plain(n, d) {
+  var g = gcd(Math.abs(n), d), a = n / g, b = d / g;
+  return b === 1 ? String(a) : a + '/' + b + ' ≈ ' + (n / d).toFixed(2);
+}
+function pl(terms) {
+  var s = '';
+  terms.forEach(function (t) {
+    var c = t[0]; if (!c) return;
+    var ab = Math.abs(c), body = t[1] === '' ? String(ab) : (ab === 1 ? '' : String(ab)) + t[1];
+    s += (c < 0 ? '-' : (s ? '+' : '')) + body;
+  });
+  return s || '0';
+}
+function fx(r) { return r === 0 ? 'x' : (r > 0 ? '(x-' + r + ')' : '(x+' + (-r) + ')'); }
+function genLat() {
+  var t = rnd(1, 3), o = {};
+  if (t === 1) {
+    var a = rnd(1, 3), h = rnd(1, 4), f1 = pl([[a, 'x^2']]), n1 = a * h * h * h;
+    o.q = 'Hitung luas daerah yang dibatasi oleh kurva $y=' + f1 + '$, sumbu-$x$, dan garis $x=' + h + '$.';
+    o.fig = { f: function (x) { return a * x * x; }, lo: 0, hi: h, xmin: -0.5, xmax: h + 0.7, lf: 'y = ' + f1.replace('^2', '²'), lpf: 0.7 };
+    o.num = n1; o.den = 3;
+    o.sol = '<ol><li>Pada $[0,' + h + ']$ kurva berada di atas sumbu-$x$, sehingga $$L=\\int_0^{' + h + '} ' + f1 + '\\,dx$$</li>' +
+      '<li>$$L=\\Big[\\frac{' + a + '}{3}x^3\\Big]_0^{' + h + '}=\\frac{' + a + '}{3}\\cdot ' + (h * h * h) + '=' + fr(n1, 3) + '$$</li></ol>';
+  } else if (t === 2) {
+    var p = rnd(2, 6), p3 = p * p * p, f2 = pl([[1, 'x^2'], [-p, 'x']]);
+    o.q = 'Hitung luas daerah yang dibatasi oleh kurva $y=' + f2 + '$ dan sumbu-$x$.';
+    o.fig = { f: function (x) { return x * x - p * x; }, lo: 0, hi: p, xmin: -0.6, xmax: p + 0.8, lf: 'y = ' + f2.replace('^2', '²'), lpf: 0.9 };
+    o.num = p3; o.den = 6;
+    o.sol = '<ol><li>Titik potong dengan sumbu-$x$: $x^2-' + p + 'x=0 \\Rightarrow x(x-' + p + ')=0$, jadi $x=0$ atau $x=' + p + '$.</li>' +
+      '<li>Pada $[0,' + p + ']$ kurva berada di bawah sumbu-$x$ (uji $x=' + fr(p, 2) + '$ menghasilkan nilai negatif), sehingga $$L=-\\int_0^{' + p + '}(' + f2 + ')\\,dx$$</li>' +
+      '<li>$$L=-\\Big[\\frac13x^3-\\frac{' + p + '}{2}x^2\\Big]_0^{' + p + '}=-\\Big(\\frac{' + p3 + '}{3}-\\frac{' + p3 + '}{2}\\Big)=' + fr(p3, 6) + '$$</li></ol>';
+  } else {
+    var A = rnd(-2, 1), d = rnd(1, 4), B = A + d, s = A + B, c = 0 - A * B, d3 = d * d * d;
+    var lin = pl([[s, 'x'], [c, '']]);
+    var Nf = function (x) { return 3 * s * x * x + 6 * c * x - 2 * x * x * x; };
+    o.q = 'Hitung luas daerah yang dibatasi oleh parabola $y=x^2$ dan garis $y=' + lin + '$.';
+    o.fig = { f: function (x) { return s * x + c; }, g: function (x) { return x * x; }, lo: A, hi: B, xmin: A - 0.8, xmax: B + 0.8, lf: 'y = ' + lin, lg: 'y = x²', lpf: 0.3, lpg: 0.9 };
+    o.num = d3; o.den = 6;
+    o.sol = '<ol><li>Titik potong: $x^2=' + lin + ' \\Rightarrow ' + pl([[1, 'x^2'], [-s, 'x'], [-c, '']]) + '=0 \\Rightarrow ' + fx(A) + fx(B) + '=0$, sehingga $x=' + A + '$ atau $x=' + B + '$.</li>' +
+      '<li>Di antara kedua titik potong, garis berada di atas parabola (selisih $-' + fx(A) + fx(B) + '$ bernilai positif), sehingga $$L=\\int_{' + A + '}^{' + B + '}(' + lin + '-x^2)\\,dx=\\int_{' + A + '}^{' + B + '}(' + pl([[-1, 'x^2'], [s, 'x'], [c, '']]) + ')\\,dx$$</li>' +
+      '<li>$$L=\\frac16\\Big[' + pl([[-2, 'x^3'], [3 * s, 'x^2'], [6 * c, 'x']]) + '\\Big]_{' + A + '}^{' + B + '}=\\frac{' + Nf(B) + '-(' + Nf(A) + ')}{6}=' + fr(d3, 6) + '$$</li></ol>';
+  }
+  return o;
+}
+var lat = null, latScore = { b: 0, t: 0 };
+function newLat() {
+  lat = genLat(); lat.counted = false;
+  var box = document.getElementById('latBody');
+  box.innerHTML = '<p class="mb-2"><b>Soal:</b> ' + lat.q + '</p><div class="fig" style="max-width:460px">' + plotSVG(lat.fig) + '</div>';
+  document.getElementById('latIn').value = '';
+  document.getElementById('latInPv').textContent = '';
+  document.getElementById('latFb').textContent = '';
+  document.getElementById('latSol').innerHTML = '';
+  typeset(box);
+}
+function checkLat() {
+  var raw = document.getElementById('latIn').value.trim();
+  var fb = document.getElementById('latFb');
+  if (!raw) { fb.style.color = '#8a4b06'; fb.textContent = 'Isi jawabanmu dulu.'; return; }
+  var pa = parseAns(raw);
+  if (!pa) { fb.style.color = '#8a4b06'; fb.textContent = 'Format belum terbaca. Contoh: 8/3 atau 2.67.'; return; }
+  var ok = Math.abs(pa.v - lat.num / lat.den) < 0.02;
+  if (!lat.counted) { lat.counted = true; latScore.t++; if (ok) latScore.b++; }
+  fb.style.color = ok ? '#116a3a' : '#9b1c1c';
+  fb.textContent = ok ? 'Benar! Luasnya ' + plain(lat.num, lat.den) + ' satuan luas.' : 'Belum tepat. Periksa batas integral dan kurva yang di atas, atau buka pembahasan.';
+  document.getElementById('latScore').textContent = 'Skor: ' + latScore.b + ' benar dari ' + latScore.t + ' soal.';
+}
+function showLat() {
+  var el = document.getElementById('latSol');
+  el.innerHTML = '<div class="card c-rumus"><h4>Pembahasan</h4>' + lat.sol + '<p><b>Jadi luasnya ' + plain(lat.num, lat.den) + ' satuan luas.</b></p></div>';
+  typeset(el);
+}
+function initLuas() {
+  document.querySelectorAll('[data-viz]').forEach(function (el) { el.innerHTML = plotSVG(VIZ[el.dataset.viz]); });
+  document.querySelectorAll('[data-solid]').forEach(function (el) { el.innerHTML = solidSVG(VIZ[el.dataset.solid]); });
+  document.getElementById('kSlider').addEventListener('input', updateK);
+  updateK(); newLat(); initAnim();
+}
+
+/* ---------- ANIMASI LUAS (Jumlah Riemann) ---------- */
+var RZ = {
+  a: { f: function (x) { return x * x; }, lo: 0, hi: 2, xmin: -0.6, xmax: 2.6, exact: 8 / 3, lf: 'y = x²', lpf: 0.75 },
+  b: { f: function (x) { return x + 2; }, g: function (x) { return x * x; }, lo: -1, hi: 2, xmin: -1.8, xmax: 2.8, exact: 4.5, lf: 'y = x + 2', lg: 'y = x²', lpf: 0.3, lpg: 0.9 }
+};
+var rzTimer = null;
+function drawRZ() {
+  var cfg = RZ[document.getElementById('rzSel').value], n = +document.getElementById('rzN').value;
+  var g = cfg.g || function () { return 0; }, dx = (cfg.hi - cfg.lo) / n, sum = 0;
+  var o = {}; for (var k in cfg) o[k] = cfg[k];
+  o.noShade = true; o.alt = 'Daerah didekati dengan ' + n + ' persegi panjang';
+  o.extra = function (sx, sy) {
+    var r = '';
+    for (var i = 0; i < n; i++) {
+      var x0 = cfg.lo + i * dx, xm = x0 + dx / 2, top = cfg.f(xm), bot = g(xm);
+      sum += (top - bot) * dx;
+      r += '<rect x="' + sx(x0) + '" y="' + sy(top) + '" width="' + (Number(sx(x0 + dx)) - Number(sx(x0))).toFixed(1) + '" height="' + (Number(sy(bot)) - Number(sy(top))).toFixed(1) + '" fill="rgba(212,160,23,.30)" stroke="#a67c00" stroke-width="' + (n > 30 ? 0.4 : 1) + '"/>';
+    }
+    return r;
+  };
+  document.getElementById('rzViz').innerHTML = plotSVG(o);
+  document.getElementById('rzNVal').textContent = n;
+  document.getElementById('rzInfo').textContent = 'n = ' + n + '  →  jumlah luas persegi panjang = ' + sum.toFixed(4) + '  |  luas sebenarnya = ' + cfg.exact.toFixed(4) + '  |  selisih = ' + Math.abs(cfg.exact - sum).toFixed(4);
+}
+function stopRZ() { if (rzTimer) { clearInterval(rzTimer); rzTimer = null; } }
+function playRZ() {
+  stopRZ();
+  var s = document.getElementById('rzN'); s.value = 1; drawRZ();
+  rzTimer = setInterval(function () {
+    var v = +s.value + 1;
+    if (v > 60) { stopRZ(); return; }
+    s.value = v; drawRZ();
+  }, 220);
+}
+
+/* ---------- ANIMASI VOLUME (putaran 360°) ---------- */
+var VOL = {
+  cakram: { f: function (x) { return Math.sqrt(x); }, g: null, a: 0, b: 4, vol: 8 * Math.PI, txt: 'V = π∫₀⁴ (√x)² dx = 8π' },
+  cincin: { f: function (x) { return 2 * x; }, g: function (x) { return x * x; }, a: 0, b: 2, vol: 64 * Math.PI / 15, txt: 'V = π∫₀² [(2x)² − (x²)²] dx = 64π/15' }
+};
+var volRaf = null;
+function stopVol() { if (volRaf) { cancelAnimationFrame(volRaf); volRaf = null; } }
+function drawVol() {
+  var cv = document.getElementById('volCanvas'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+  var cfg = VOL[document.getElementById('volSel').value], a = cfg.a, b = cfg.b, f = cfg.f, g = cfg.g || function () { return 0; };
+  var angDeg = +document.getElementById('volAng').value, th = angDeg * Math.PI / 180;
+  document.getElementById('volAngVal').textContent = angDeg;
+  var x0 = a + (b - a) * (+document.getElementById('volPos').value) / 100;
+  var ymax = 0, i, phi; for (i = 0; i <= 60; i++) ymax = Math.max(ymax, f(a + (b - a) * i / 60));
+  var ky = (H / 2 - 25) / (ymax * 1.05), kx = (W - 70 - 0.4 * ymax * ky) / (b - a), ox = 35, oy = H / 2;
+  var pr = function (x, y, z) { return [ox + (x - a) * kx + 0.4 * z * ky, oy - (y + 0.25 * z) * ky]; };
+  var rot = function (x, r, p) { return pr(x, r * Math.cos(p), r * Math.sin(p)); };
+  var path = function (pts, close) { ctx.beginPath(); pts.forEach(function (q, j) { j ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }); if (close) ctx.closePath(); };
+  var region = function (p) {
+    var up = [], lo = [], x;
+    for (var j = 0; j <= 60; j++) { x = a + (b - a) * j / 60; up.push(rot(x, f(x), p)); lo.unshift(rot(x, g(x), p)); }
+    return up.concat(lo);
+  };
+  var circle = function (x, r, p0, p1) { var pts = [], steps = Math.max(2, Math.ceil((p1 - p0) / (Math.PI / 36))); for (var j = 0; j <= steps; j++) pts.push(rot(x, r, p0 + (p1 - p0) * j / steps)); return pts; };
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.lineWidth = 1.5; ctx.strokeStyle = '#1a1011';
+  path([pr(a - (b - a) * 0.06, 0, 0), pr(b + (b - a) * 0.06, 0, 0)]); ctx.stroke();
+  ctx.fillStyle = '#1a1011'; ctx.font = '14px sans-serif';
+  var ax = pr(b + (b - a) * 0.06, 0, 0); ctx.fillText('x', ax[0] - 2, ax[1] - 8);
+
+  for (phi = 0; phi < th; phi += Math.PI / 18) {
+    var gp = region(phi); path(gp, true);
+    ctx.fillStyle = 'rgba(139,26,26,.06)'; ctx.fill(); ctx.strokeStyle = 'rgba(139,26,26,.18)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+  for (i = 0; i <= 10; i++) {
+    var xi = a + (b - a) * i / 10;
+    if (th > 0) {
+      path(circle(xi, f(xi), 0, th)); ctx.strokeStyle = 'rgba(139,26,26,.6)'; ctx.lineWidth = 1.2; ctx.stroke();
+      if (g(xi) > 1e-6) { path(circle(xi, g(xi), 0, th)); ctx.strokeStyle = 'rgba(212,160,23,.7)'; ctx.stroke(); }
+    }
+  }
+  var ro = f(x0), ri = g(x0);
+  path(circle(x0, ro, 0, 2 * Math.PI), true);
+  if (ri > 1e-6) { var inner = circle(x0, ri, 0, 2 * Math.PI).reverse(); inner.forEach(function (q, j) { j ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }); ctx.closePath(); }
+  ctx.fillStyle = 'rgba(212,160,23,.35)'; ctx.fill('evenodd'); ctx.strokeStyle = '#a67c00'; ctx.lineWidth = 2; ctx.stroke();
+
+  path(region(th), true);
+  ctx.fillStyle = 'rgba(139,26,26,.5)'; ctx.fill(); ctx.strokeStyle = '#8b1a1a'; ctx.lineWidth = 2.5; ctx.stroke();
+
+  var area = Math.PI * (ro * ro - ri * ri);
+  document.getElementById('volInfo').textContent = 'Irisan di x = ' + x0.toFixed(2) + ': jari-jari luar ' + ro.toFixed(2) + (ri > 1e-6 ? ', jari-jari dalam ' + ri.toFixed(2) : '') + ', luas irisan = ' + area.toFixed(2) + '.  Volume total: ' + cfg.txt + ' ≈ ' + cfg.vol.toFixed(2) + ' satuan volume.';
+}
+function playVol() {
+  stopVol();
+  var s = document.getElementById('volAng'), start = null;
+  var step = function (ts) {
+    if (start === null) start = ts;
+    var p = Math.min(1, (ts - start) / 4500);
+    s.value = Math.round(p * 360); drawVol();
+    volRaf = p < 1 ? requestAnimationFrame(step) : null;
+  };
+  s.value = 0; drawVol(); volRaf = requestAnimationFrame(step);
+}
+function initAnim() {
+  var s = document.getElementById('rzN');
+  s.addEventListener('input', function () { stopRZ(); drawRZ(); });
+  document.getElementById('rzSel').addEventListener('change', function () { stopRZ(); drawRZ(); });
+  document.getElementById('volAng').addEventListener('input', function () { stopVol(); drawVol(); });
+  document.getElementById('volPos').addEventListener('input', drawVol);
+  document.getElementById('volSel').addEventListener('change', function () { stopVol(); drawVol(); });
+  drawRZ(); drawVol();
+  DYN.an = { gen: genAn, cur: null, b: 0, t: 0 };
+  document.getElementById('cSlider').addEventListener('input', updateC);
+  DYN.tr = { gen: genTr, cur: null, b: 0, t: 0 };
+  ['tk', 'sb', 'pr', 'td', 'vl'].forEach(function (k) { DYN[k] = { gen: { tk: genTk, sb: genSb, pr: genPr, td: genTd, vl: genVl }[k], cur: null, b: 0, t: 0 }; });
+  updateC(); dynNew('an'); dynNew('tr'); ['tk', 'sb', 'pr', 'td', 'vl'].forEach(dynNew);
+  syncAnsMode();
+}
+
+/* ---------- LATAR HEADER: luar angkasa dengan bintang berkelip ---------- */
+function initHero() {
+  var cv = document.getElementById('starCanvas');
+  if (!cv || !cv.getContext) return;
+  var ctx = cv.getContext('2d'), stars = [], W = 1, H = 1, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var COLORS = ['255,255,255', '255,255,255', '255,244,200', '255,226,140', '255,190,160', '200,220,255'];
+  var shoot = null, nextShoot = 2500;
+  function build() {
+    var n = Math.max(70, Math.min(260, Math.round(W * H / 2000)));
+    stars = [];
+    for (var i = 0; i < n; i++) {
+      stars.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.3 + 0.3,
+        ph: Math.random() * 6.283, sp: 0.8 + Math.random() * 2.6, c: COLORS[Math.floor(Math.random() * COLORS.length)], big: Math.random() < 0.07 });
+    }
+  }
+  function resize() {
+    var r = cv.parentNode.getBoundingClientRect();
+    W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    build();
+  }
+  function draw(ms) {
+    var t = ms / 1000;
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var tw = 0.5 + 0.5 * Math.sin(t * s.sp + s.ph);
+      var a = 0.12 + 0.88 * tw * tw;
+      var rad = s.r * (0.7 + 0.6 * tw);
+      ctx.fillStyle = 'rgba(' + s.c + ',' + a.toFixed(3) + ')';
+      if (s.big) { ctx.shadowColor = 'rgba(' + s.c + ',.9)'; ctx.shadowBlur = 6 + 10 * tw; }
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.big ? rad + 0.7 : rad, 0, 6.283); ctx.fill();
+      if (s.big) {
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = 'rgba(' + s.c + ',' + (a * 0.6).toFixed(3) + ')'; ctx.lineWidth = 1;
+        var L = 3 + 7 * tw;
+        ctx.beginPath(); ctx.moveTo(s.x - L, s.y); ctx.lineTo(s.x + L, s.y); ctx.moveTo(s.x, s.y - L); ctx.lineTo(s.x, s.y + L); ctx.stroke();
+      }
+    }
+    ctx.shadowBlur = 0;
+    if (!shoot && ms > nextShoot) { shoot = { x: Math.random() * W * 0.7, y: Math.random() * H * 0.4, t0: ms }; }
+    if (shoot) {
+      var p = (ms - shoot.t0) / 900;
+      if (p >= 1) { shoot = null; nextShoot = ms + 5000 + Math.random() * 5000; }
+      else {
+        var hx = shoot.x + p * 260, hy = shoot.y + p * 120, g = ctx.createLinearGradient(hx - 70, hy - 33, hx, hy);
+        g.addColorStop(0, 'rgba(255,230,150,0)'); g.addColorStop(1, 'rgba(255,240,190,' + (1 - p).toFixed(2) + ')');
+        ctx.strokeStyle = g; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(hx - 70, hy - 33); ctx.lineTo(hx, hy); ctx.stroke();
+      }
+    }
+  }
+  resize();
+  if (window.ResizeObserver) { new ResizeObserver(resize).observe(cv.parentNode); } else { window.addEventListener('resize', resize); }
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { draw(1500); return; }
+  function loop(ms) { draw(ms); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- LOGO & MODE TAMPILAN ---------- */
+var LOGO_ID = '1d698Ummdjz0mjcv4LZ6UUw-Vm7wwhoau';
+function setLogo(src) {
+  document.querySelectorAll('.js-logo').forEach(function (im) {
+    im.onload = function () { im.style.visibility = 'visible'; };
+    im.src = src;
+  });
+}
+function initLogo() {
+  setLogo('https://drive.google.com/thumbnail?id=' + LOGO_ID + '&sz=w600');
+  if (window.google && google.script && google.script.run) {
+    google.script.run.withSuccessHandler(function (u) { if (u) setLogo(u); }).withFailureHandler(function () {}).getLogo();
+  }
+}
+var viewMode = 'auto';
+function applyView() {
+  var v = viewMode === 'auto' ? (window.innerWidth < 768 ? 'mobile' : 'pc') : viewMode;
+  var root = document.documentElement;
+  root.setAttribute('data-view', v);
+  if (viewMode === 'pc') root.setAttribute('data-force', 'pc'); else root.removeAttribute('data-force');
+  document.getElementById('viewLabel').textContent = { auto: 'Otomatis', mobile: 'Mobile', pc: 'PC' }[viewMode];
+  if (typeof syncAnsMode === 'function') syncAnsMode();
+  document.getElementById('viewHint').textContent = 'Tampilan aktif: ' + (v === 'mobile' ? 'Mobile (HP)' : 'PC (laptop)') + '.';
+  document.querySelectorAll('input[name="viewMode"]').forEach(function (r) { r.checked = (r.value === viewMode); });
+}
+function initView() {
+  try { var m = localStorage.getItem('viewMode'); if (m === 'auto' || m === 'mobile' || m === 'pc') viewMode = m; } catch (e) {}
+  var btn = document.getElementById('viewBtn'), panel = document.getElementById('viewPanel');
+  var toggle = function (open) { panel.classList.toggle('hidden', !open); btn.setAttribute('aria-expanded', open); };
+  btn.addEventListener('click', function (e) { e.stopPropagation(); toggle(panel.classList.contains('hidden')); });
+  panel.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.addEventListener('click', function () { toggle(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+  document.querySelectorAll('input[name="viewMode"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      viewMode = r.value;
+      try { localStorage.setItem('viewMode', viewMode); } catch (e) {}
+      applyView();
+    });
+  });
+  window.addEventListener('resize', applyView);
+  applyView();
+}
+
+/* ---------- TAB ---------- */
+document.querySelectorAll('.tabbtn').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('.tabbtn').forEach(function (x) { x.classList.remove('active'); });
+    document.querySelectorAll('.tabpane').forEach(function (x) { x.classList.remove('show'); });
+    b.classList.add('active');
+    var pane = document.getElementById(b.dataset.tab);
+    pane.classList.add('show');
+    typeset(pane);
+  });
+});
+
+/* ---------- MODUL ---------- */
+var currentSec = 0;
+function buildModul() {
+  var toc = document.getElementById('toc'), sel = document.getElementById('tocSelect'), box = document.getElementById('modulContent');
+  MODUL.forEach(function (m, i) {
+    toc.insertAdjacentHTML('beforeend', '<button class="tocbtn" data-i="' + i + '">' + m.title + '</button>');
+    sel.insertAdjacentHTML('beforeend', '<option value="' + i + '">' + m.title + '</option>');
+    box.insertAdjacentHTML('beforeend', '<article class="sec" id="' + m.id + '">' + m.html + '</article>');
+  });
+  toc.addEventListener('click', function (e) { var b = e.target.closest('.tocbtn'); if (b) showSec(+b.dataset.i); });
+  sel.addEventListener('change', function () { showSec(+sel.value); });
+  var nav = '<div class="flex justify-between mt-4 no-print"><button class="btn" onclick="showSec(currentSec-1)" id="secPrev">Subbab sebelumnya</button><button class="btn btn-teal" onclick="showSec(currentSec+1)" id="secNext">Subbab berikutnya</button></div>';
+  box.insertAdjacentHTML('beforeend', nav);
+  showSec(0);
+}
+function showSec(i) {
+  if (i < 0 || i >= MODUL.length) return;
+  currentSec = i;
+  document.querySelectorAll('.sec').forEach(function (s, k) { s.classList.toggle('show', k === i); });
+  document.querySelectorAll('.tocbtn').forEach(function (b, k) { b.classList.toggle('active', k === i); });
+  document.getElementById('tocSelect').value = i;
+  document.getElementById('secPrev').disabled = i === 0;
+  document.getElementById('secNext').disabled = i === MODUL.length - 1;
+  typeset(document.getElementById('modulContent'));
+  window.scrollTo({ top: document.getElementById('tabbar').offsetTop, behavior: 'smooth' });
+}
+function printModul() {
+  document.body.classList.add('print-all');
+  typeset(document.getElementById('modulContent')).then(function () { window.print(); });
+}
+window.addEventListener('afterprint', function () { document.body.classList.remove('print-all'); });
+
+/* ---------- SLIDE ---------- */
+var cur = 0;
+function renderSlide() {
+  var s = SLIDES[cur];
+  var pts = s.pts.map(function (p) { return '<li class="my-1">' + p + '</li>'; }).join('');
+  document.getElementById('slideBox').innerHTML =
+    '<h3 class="text-2xl font-bold mb-4">' + (cur + 1) + '. ' + s.t + '</h3>' +
+    '<div class="cols2">' +
+      '<div><ul class="list-disc pl-5 text-lg">' + pts + '</ul><div class="bigformula mt-4">' + s.f + '</div></div>' +
+      '<div class="visual"><p class="font-bold text-red-900 mb-1">Ilustrasi / Catatan Visual</p><div>' + s.v + '</div></div>' +
+    '</div>';
+  document.getElementById('slideCounter').textContent = 'Slide ' + (cur + 1) + ' / ' + SLIDES.length;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').disabled = cur === SLIDES.length - 1;
+  typeset(document.getElementById('slideBox'));
+}
+function goSlide(d) {
+  var n = cur + d;
+  if (n < 0 || n >= SLIDES.length) return;
+  cur = n; renderSlide();
+}
+document.addEventListener('keydown', function (e) {
+  if (!document.getElementById('tab2').classList.contains('show')) return;
+  if (e.key === 'ArrowRight') goSlide(1);
+  if (e.key === 'ArrowLeft') goSlide(-1);
+});
+
+/* ---------- SOAL ---------- */
+/* ---------- KUIS PILIHAN GANDA ---------- */
+var R = String.raw;
+var KUIS = [
+ { tp: 'anti', q: R`Antiderivatif dari $f(x)=6x^2$ adalah ...`, o: [R`$2x^3+C$`, R`$3x^3+C$`, R`$12x+C$`, R`$6x^3+C$`], a: 0, e: R`<p>$\int 6x^2dx=6\cdot\frac{x^3}{3}=2x^3$, lalu tambahkan $C$.</p>` },
+ { tp: 'anti', q: R`Jika $F'(x)=4x-3$ dan $F(1)=5$, maka $F(x)=\ldots$`, o: [R`$2x^2-3x+5$`, R`$4x^2-3x+6$`, R`$2x^2-3x+6$`, R`$2x^2-3x+4$`], a: 2, e: R`<p>$F(x)=2x^2-3x+C$. Dari $F(1)=5$: $2-3+C=5$, jadi $C=6$.</p>` },
+ { tp: 'tak', q: R`$\int (3x^2-4x+1)\,dx=\ldots$`, o: [R`$x^3-2x^2+x+C$`, R`$6x-4+C$`, R`$x^3-4x^2+x+C$`, R`$3x^3-2x^2+x+C$`], a: 0, e: R`<p>Integralkan tiap suku dengan aturan pangkat: $x^3-2x^2+x+C$.</p>` },
+ { tp: 'tak', q: R`$\int \sqrt{x}\,dx=\ldots$`, o: [R`$\tfrac12x^{-1/2}+C$`, R`$\tfrac32x^{3/2}+C$`, R`$\sqrt{x}+C$`, R`$\tfrac23x^{3/2}+C$`], a: 3, e: R`<p>$\sqrt{x}=x^{1/2}$ sehingga $\int x^{1/2}dx=\dfrac{x^{3/2}}{3/2}=\tfrac23x^{3/2}$.</p>` },
+ { tp: 'subs', q: R`$\int 2x(x^2+1)^3\,dx=\ldots$`, o: [R`$(x^2+1)^4+C$`, R`$\tfrac{(x^2+1)^4}{8}+C$`, R`$\tfrac{(x^2+1)^4}{4}+C$`, R`$6(x^2+1)^2+C$`], a: 2, e: R`<p>Misal $u=x^2+1$, $du=2x\,dx$. Maka $\int u^3du=\tfrac{u^4}{4}+C$.</p>` },
+ { tp: 'subs', q: R`$\int 3x^2(x^3+2)^5\,dx=\ldots$`, o: [R`$(x^3+2)^6+C$`, R`$\tfrac{(x^3+2)^6}{18}+C$`, R`$\tfrac{(x^3+2)^6}{3}+C$`, R`$\tfrac{(x^3+2)^6}{6}+C$`], a: 3, e: R`<p>Misal $u=x^3+2$, $du=3x^2dx$. Maka $\int u^5du=\tfrac{u^6}{6}+C$.</p>` },
+ { tp: 'parsial', q: R`Rumus integral parsial yang benar adalah ...`, o: [R`$\int u\,dv=uv+\int v\,du$`, R`$\int u\,dv=uv-\int v\,du$`, R`$\int u\,dv=u\,dv-v\,du$`, R`$\int u\,dv=\int u\,du\cdot\int dv$`], a: 1, e: R`<p>Dari $d(uv)=u\,dv+v\,du$ diperoleh $\int u\,dv=uv-\int v\,du$.</p>` },
+ { tp: 'parsial', q: R`Pada $\int x\sqrt{x+1}\,dx$, pilihan $u$ dan $dv$ yang tepat adalah ...`, o: [R`$u=x,\ dv=\sqrt{x+1}\,dx$`, R`$u=\sqrt{x+1},\ dv=x\,dx$`, R`$u=x\sqrt{x+1},\ dv=dx$`, R`$u=1,\ dv=x\sqrt{x+1}\,dx$`], a: 0, e: R`<p>$u=x$ turunannya sederhana ($du=dx$), dan $dv=\sqrt{x+1}\,dx$ mudah diintegralkan.</p>` },
+ { tp: 'trig', q: R`$\int \sin 2x\,dx=\ldots$`, o: [R`$2\cos 2x+C$`, R`$-\tfrac12\cos 2x+C$`, R`$\tfrac12\cos 2x+C$`, R`$-2\cos 2x+C$`], a: 1, e: R`<p>$\int\sin(ax)\,dx=-\tfrac1a\cos(ax)+C$ dengan $a=2$.</p>` },
+ { tp: 'trig', q: R`$\int \sin^2x\cos x\,dx=\ldots$`, o: [R`$\sin^3x+C$`, R`$\tfrac13\cos^3x+C$`, R`$-\tfrac13\sin^3x+C$`, R`$\tfrac13\sin^3x+C$`], a: 3, e: R`<p>Misal $u=\sin x$, $du=\cos x\,dx$. Maka $\int u^2du=\tfrac13u^3+C$.</p>` },
+ { tp: 'trig', q: R`$\int_0^{\pi}\cos x\,dx=\ldots$`, o: [R`$1$`, R`$2$`, R`$0$`, R`$-1$`], a: 2, e: R`<p>$\big[\sin x\big]_0^\pi=\sin\pi-\sin 0=0$.</p>` },
+ { tp: 'tentu', q: R`$\int_1^3 (2x+1)\,dx=\ldots$`, o: [R`$8$`, R`$10$`, R`$12$`, R`$14$`], a: 1, e: R`<p>$\big[x^2+x\big]_1^3=(9+3)-(1+1)=10$.</p>` },
+ { tp: 'tentu', q: R`Jika $\int_a^b f(x)\,dx=6$, maka $\int_b^a f(x)\,dx=\ldots$`, o: [R`$6$`, R`$0$`, R`$-6$`, R`$\tfrac16$`], a: 2, e: R`<p>Menukar batas integral mengubah tanda: $\int_b^a f\,dx=-\int_a^b f\,dx=-6$.</p>` },
+ { tp: 'luas', q: R`Luas daerah di bawah kurva $y=x^2$ pada interval $[0,3]$ adalah ...`, o: [R`$3$`, R`$9$`, R`$27$`, R`$\tfrac92$`], a: 1, e: R`<p>$L=\int_0^3x^2dx=\Big[\tfrac{x^3}{3}\Big]_0^3=9$.</p>` },
+ { tp: 'luas', q: R`Luas daerah antara kurva atas $y=f(x)$ dan kurva bawah $y=g(x)$ pada $[a,b]$ dihitung dengan ...`, o: [R`$\int_a^b (g-f)\,dx$`, R`$\int_a^b (f+g)\,dx$`, R`$\int_a^b (f-g)\,dx$`, R`$\pi\int_a^b (f-g)^2dx$`], a: 2, e: R`<p>Luas = integral dari (kurva atas dikurangi kurva bawah).</p>` },
+ { tp: 'volume', q: R`Volume benda putar dari $y=f(x)$ pada $[a,b]$ yang diputar $360^\circ$ mengelilingi sumbu-$x$ adalah ...`, o: [R`$\pi\int_a^b f(x)\,dx$`, R`$\pi\int_a^b [f(x)]^2dx$`, R`$2\pi\int_a^b f(x)\,dx$`, R`$\int_a^b [f(x)]^2dx$`], a: 1, e: R`<p>Metode cakram: jari-jari $f(x)$, luas cakram $\pi[f(x)]^2$.</p>` },
+ { tp: 'volume', q: R`Daerah di bawah $y=x$ pada $[0,3]$ diputar $360^\circ$ mengelilingi sumbu-$x$. Volumenya adalah ...`, o: [R`$27\pi$`, R`$\tfrac92\pi$`, R`$3\pi$`, R`$9\pi$`], a: 3, e: R`<p>$V=\pi\int_0^3x^2dx=\pi\cdot\tfrac{27}{3}=9\pi$.</p>` }
+];
+var kz = { list: [], i: 0, score: 0, done: false };
+function kzStart() {
+  var tp = document.getElementById('kzTopic').value;
+  var l = KUIS.filter(function (q) { return tp === 'semua' || q.tp === tp; }), i, j, t;
+  for (i = l.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = l[i]; l[i] = l[j]; l[j] = t; }
+  kz = { list: l, i: 0, score: 0, done: false };
+  kzRender();
+}
+function kzRender() {
+  var box = document.getElementById('kzBox');
+  if (!kz.list.length) { box.innerHTML = '<p>Belum ada soal kuis untuk materi ini.</p>'; return; }
+  if (kz.i >= kz.list.length) {
+    var pct = Math.round(kz.score / kz.list.length * 100);
+    box.innerHTML = '<h3 class="text-xl font-bold mb-2">Kuis selesai</h3><p class="text-lg">Skor kamu: <b>' + kz.score + ' / ' + kz.list.length + '</b> (' + pct + '%)</p><p class="mt-1">' +
+      (pct >= 80 ? 'Hebat! Pemahamanmu sudah kuat.' : pct >= 60 ? 'Cukup baik. Ulangi materi yang masih keliru lewat Modul Ajar.' : 'Ayo pelajari lagi Modul Ajar dan Slide, lalu coba kuis ini kembali.') + '</p><button class="btn btn-teal mt-3" onclick="kzStart()">Ulangi Kuis</button>';
+    return;
+  }
+  var q = kz.list[kz.i], L = ['A', 'B', 'C', 'D'];
+  kz.done = false;
+  box.innerHTML = '<div class="flex flex-wrap items-center gap-2 mb-2"><span class="font-bold">Soal ' + (kz.i + 1) + ' dari ' + kz.list.length + '</span><span class="tchip">' + TLABEL[q.tp] + '</span><span class="ml-auto text-sm text-slate-600">Skor: ' + kz.score + '</span></div>' +
+    '<p class="mb-3">' + q.q + '</p><div class="space-y-2">' +
+    q.o.map(function (o, k) { return '<button class="kzopt" data-k="' + k + '" onclick="kzPick(' + k + ')"><b>' + L[k] + '.</b> ' + o + '</button>'; }).join('') + '</div><div id="kzFb"></div>';
+  typeset(box);
+}
+function kzPick(k) {
+  if (kz.done) return; kz.done = true;
+  var q = kz.list[kz.i], ok = (k === q.a);
+  if (ok) kz.score++;
+  document.querySelectorAll('.kzopt').forEach(function (b) {
+    var bk = +b.dataset.k; b.disabled = true;
+    if (bk === q.a) b.classList.add('ok'); else if (bk === k) b.classList.add('bad');
+  });
+  var fb = document.getElementById('kzFb');
+  fb.innerHTML = '<div class="card ' + (ok ? 'c-ok' : 'c-bad') + '"><h4>' + (ok ? 'Benar!' : 'Belum tepat') + '</h4>' + q.e + '</div><button class="btn mt-2" onclick="kzNext()">' + (kz.i === kz.list.length - 1 ? 'Lihat Hasil' : 'Soal Berikutnya') + '</button>';
+  typeset(fb);
+}
+function kzNext() { kz.i++; kzRender(); }
+function initKuis() {
+  var sel = document.getElementById('kzTopic');
+  TOPICS.forEach(function (t) { sel.insertAdjacentHTML('beforeend', '<option value="' + t[0] + '">' + t[1] + '</option>'); });
+  document.getElementById('modeBar').addEventListener('click', function (e) {
+    var b = e.target.closest('.filterbtn'); if (!b) return;
+    document.querySelectorAll('#modeBar .filterbtn').forEach(function (x) { x.classList.toggle('active', x === b); });
+    document.getElementById('bankPane').style.display = b.dataset.m === 'bank' ? 'block' : 'none';
+    document.getElementById('kuisPane').style.display = b.dataset.m === 'kuis' ? 'block' : 'none';
+    typeset(document.getElementById('tab3'));
+  });
+  kzStart();
+}
+var filter = 'semua', topic = 'semua';
+var LEVELS = [['semua', 'Semua'], ['mudah', 'Mudah'], ['sedang', 'Sedang'], ['sulit', 'Sulit']];
+var TOPICS = [['semua', 'Semua Materi'], ['anti', 'Antiderivatif'], ['tak', 'Integral Tak Tentu'], ['subs', 'Substitusi'], ['parsial', 'Integral Parsial'], ['trig', 'Integral Trigonometri'], ['tentu', 'Integral Tentu'], ['luas', 'Luas Daerah'], ['volume', 'Volume Benda Putar']];
+var TLABEL = {}; TOPICS.forEach(function (t) { TLABEL[t[0]] = t[1]; });
+function renderFilters() {
+  document.getElementById('filters').innerHTML = LEVELS.map(function (x) {
+    return '<button class="filterbtn' + (filter === x[0] ? ' active' : '') + '" data-f="' + x[0] + '">' + x[1] + '</button>';
+  }).join('');
+  document.getElementById('topicFilters').innerHTML = TOPICS.map(function (x) {
+    return '<button class="filterbtn' + (topic === x[0] ? ' active' : '') + '" data-t="' + x[0] + '">' + x[1] + '</button>';
+  }).join('');
+}
+function buildFilters() {
+  document.getElementById('filters').addEventListener('click', function (e) {
+    var b = e.target.closest('.filterbtn'); if (!b) return;
+    filter = b.dataset.f; renderSoal();
+  });
+  document.getElementById('topicFilters').addEventListener('click', function (e) {
+    var b = e.target.closest('.filterbtn'); if (!b) return;
+    topic = b.dataset.t; renderSoal();
+  });
+  renderSoal();
+}
+function renderSoal() {
+  var html = '', shown = 0;
+  SOAL.forEach(function (s, i) {
+    if (filter !== 'semua' && s.lv !== filter) return;
+    if (topic !== 'semua' && s.tp !== topic) return;
+    shown++;
+    html += '<article class="bg-white border border-slate-200 rounded-xl p-5">' +
+      '<div class="flex flex-wrap items-center gap-2 mb-2"><h3 class="font-bold text-lg mr-1">Soal ' + (i + 1) + '</h3><span class="badge b-' + s.lv + '">' + LABEL[s.lv] + '</span><span class="tchip">' + TLABEL[s.tp] + '</span></div>' +
+      '<p>' + s.q + '</p>' +
+      '<button class="btn mt-3" aria-expanded="false" aria-controls="ans' + i + '" onclick="toggleAns(' + i + ', this)">Lihat Kunci Jawaban &amp; Pembahasan</button>' +
+      '<div class="acc" id="ans' + i + '"><div><div class="card c-contoh mt-3"><h4>Pembahasan</h4>' + s.a + '</div></div></div>' +
+      '</article>';
+  });
+  if (!shown) html = '<div class="bg-white border border-slate-200 rounded-xl p-5 text-slate-600">Belum ada soal untuk kombinasi tingkat kesulitan dan materi ini. Coba ubah salah satu filter.</div>';
+  renderFilters();
+  var box = document.getElementById('soalList');
+  box.innerHTML = html;
+  typeset(box);
+}
+function toggleAns(i, btn) {
+  var a = document.getElementById('ans' + i);
+  var open = a.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+  btn.innerHTML = open ? 'Sembunyikan Pembahasan' : 'Lihat Kunci Jawaban &amp; Pembahasan';
+  if (open) typeset(a);
+}
+
+/* ---------- INIT ---------- */
+initView();
+initLogo();
+initHero();
+document.getElementById("year").textContent = new Date().getFullYear();
+buildModul();
+initLuas();
+renderSlide();
+buildFilters();
+renderSoal();
+initKuis();
+</script>
+</body>
+</html>
