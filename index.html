@@ -404,17 +404,34 @@ s6: [
  { q: String.raw`Daerah yang dibatasi oleh $y=x^2$, sumbu-$x$, garis $x=1$, dan garis $x=2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volumenya.`, fig: figV('w3', 'cakram'), a: String.raw`<ol><li>Metode cakram dengan $f(x)=x^2$ pada $[1,2]$.</li><li>$$V=\pi\int_1^2 (x^2)^2dx=\pi\int_1^2 x^4dx=\pi\Big[\tfrac15x^5\Big]_1^2$$</li><li>$$=\pi\cdot\tfrac{32-1}{5}=\tfrac{31}{5}\pi$$</li></ol>` }
 ]
 };
+var GENEX = { s0: genAn, s1: genTk, s2: genSb, s3: genPr, st: genTr, s4: genTd, s5: genLuasEx, s6: genVl };
+function genLuasEx() {
+  var o = genLat();
+  return { q: o.q, fig: '<div class="fig" style="max-width:460px">' + plotSVG(o.fig) + '</div>', sol: o.sol, disp: plain(o.num, o.den) + ' satuan luas' };
+}
+function newEx(id) {
+  var o = GENEX[id](), el = document.getElementById(id + 'Dyn');
+  if (!el) return;
+  el.innerHTML = '<p class="font-bold mt-3">Contoh Baru</p><p><b>Soal:</b> ' + o.q + '</p>' + (o.fig || '') + '<p class="mt-2"><b>Pembahasan:</b></p>' + o.sol +
+    '<p><b>Jawaban: ' + (o.disp || o.ans) + '</b></p><div class="no-print"><button type="button" class="btn btn-teal mt-2" onclick="newEx(\'' + id + '\')">Contoh Baru Lagi</button></div>';
+  typeset(el);
+}
 function more(id, list) {
   var btns = '', panels = '';
   list.forEach(function (e, i) {
     btns += '<button class="exbtn' + (i === 0 ? ' active' : '') + '" data-sec="' + id + '" data-i="' + i + '" onclick="showEx(\'' + id + '\',' + i + ')">Contoh ' + (i + 2) + '</button>';
     panels += '<div class="ex-panel' + (i === 0 ? ' show' : '') + '" data-sec="' + id + '" data-i="' + i + '"><p class="font-bold mt-3">Contoh ' + (i + 2) + '</p><p><b>Soal:</b> ' + e.q + '</p>' + (e.fig || '') + '<p class="mt-2"><b>Pembahasan:</b></p>' + e.a + '</div>';
   });
-  return card('c-contoh', 'Contoh Lainnya', '<p class="no-print">Pilih contoh di bawah untuk berlatih memahami variasi soal:</p><div class="flex flex-wrap gap-2 mt-2 no-print">' + btns + '</div>' + panels);
+  if (GENEX[id]) {
+    btns += '<button class="exbtn" data-sec="' + id + '" data-i="dyn" onclick="showEx(\'' + id + '\',\'dyn\')">Contoh Baru</button>';
+    panels += '<div class="ex-panel" data-sec="' + id + '" data-i="dyn" id="' + id + 'Dyn"></div>';
+  }
+  return card('c-contoh', 'Contoh Lainnya', '<p class="no-print">Pilih contoh di bawah untuk memahami variasi soal. Tombol <b>Contoh Baru</b> menampilkan contoh lain dengan angka yang berbeda setiap kali ditekan.</p><div class="flex flex-wrap gap-2 mt-2 no-print">' + btns + '</div>' + panels);
 }
 function showEx(id, i) {
-  document.querySelectorAll('.ex-panel[data-sec="' + id + '"]').forEach(function (p) { p.classList.toggle('show', +p.dataset.i === i); });
-  document.querySelectorAll('.exbtn[data-sec="' + id + '"]').forEach(function (b) { b.classList.toggle('active', +b.dataset.i === i); });
+  if (i === 'dyn') newEx(id);
+  document.querySelectorAll('.ex-panel[data-sec="' + id + '"]').forEach(function (p) { p.classList.toggle('show', String(p.dataset.i) === String(i)); });
+  document.querySelectorAll('.exbtn[data-sec="' + id + '"]').forEach(function (b) { b.classList.toggle('active', String(b.dataset.i) === String(i)); });
   typeset(document.querySelector('.ex-panel[data-sec="' + id + '"][data-i="' + i + '"]'));
 }
 MODUL.forEach(function (m) { m.html += more(m.id, EXTRA[m.id]); });
@@ -1148,6 +1165,7 @@ function initAnim() {
   DYN.tr = { gen: genTr, cur: null, b: 0, t: 0 };
   ['tk', 'sb', 'pr', 'td', 'vl'].forEach(function (k) { DYN[k] = { gen: { tk: genTk, sb: genSb, pr: genPr, td: genTd, vl: genVl }[k], cur: null, b: 0, t: 0 }; });
   updateC(); dynNew('an'); dynNew('tr'); ['tk', 'sb', 'pr', 'td', 'vl'].forEach(dynNew);
+  Object.keys(GENEX).forEach(newEx);
   syncAnsMode();
 }
 
