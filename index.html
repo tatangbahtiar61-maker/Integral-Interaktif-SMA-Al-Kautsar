@@ -38,10 +38,11 @@
   .gold-text { color:#f5d36b; }
   .site-footer { background:#140b0c; color:#e9d9a8; border-top:4px solid #d4a017; margin-top:2rem; padding:1.5rem 0; text-align:center; font-size:.9rem; }
   .site-footer .ft-title { color:#f5d36b; font-weight:700; font-size:1.05rem; }
-  .ans-pad { display:none; grid-template-columns:repeat(4,1fr); gap:.45rem; max-width:270px; margin-top:.6rem; }
+  .ans-pad { display:none; grid-template-columns:repeat(5,1fr); gap:.4rem; max-width:340px; margin-top:.6rem; }
   html[data-view="mobile"] .ans-pad { display:grid; max-width:100%; }
   .ans-pad.force { display:grid; } .ans-pad.hide { display:none !important; }
-  .ans-key { padding:.75rem 0; border-radius:.6rem; border:1px solid var(--line); background:#fff; font-weight:700; font-size:1.2rem; touch-action:manipulation; user-select:none; }
+  .ans-key.wide { grid-column:span 2; }
+  .ans-key { padding:.7rem 0; border-radius:.6rem; border:1px solid var(--line); background:#fff; font-weight:700; font-size:1.2rem; touch-action:manipulation; user-select:none; }
   .ans-key:active { background:#f3e6c9; }
   .ans-key.op { background:#fff3c4; } .ans-key.ok { background:var(--teal); color:#f5d36b; border-color:var(--teal); }
   .c-ok { background:#e4f4e8; border-color:#9fd3ad; } .c-bad { background:#fbe0e0; border-color:#e1a0a0; }
@@ -642,48 +643,104 @@ function solidSVG(o) {
 /* ---------- LATIHAN DINAMIS UMUM (dipakai subbab Antiderivatif) ---------- */
 var DYN = {};
 /* ---------- INPUT JAWABAN: keypad layar + pembaca pecahan/minus ---------- */
+function evalExpr(s) {
+  var toks = s.match(/\d+(?:\.\d+)?|\.\d+|[+\-*\/^()\u03C0\u221A]/g);
+  if (!toks || toks.join('') !== s) return null;
+  var i = 0, hasPi = false;
+  var peek = function () { return toks[i]; };
+  var isStart = function (t) { return t !== undefined && (/^[\d.]/.test(t) || t === '\u03C0' || t === '\u221A' || t === '('); };
+  function atom() {
+    var t = toks[i++];
+    if (t === undefined) throw 0;
+    if (/^[\d.]/.test(t)) return { v: parseFloat(t), tex: t };
+    if (t === '\u03C0') { hasPi = true; return { v: Math.PI, tex: '\\pi' }; }
+    if (t === '\u221A') { var a = atom(); if (a.v < 0) throw 0; return { v: Math.sqrt(a.v), tex: '\\sqrt{' + a.tex + '}' }; }
+    if (t === '(') { var e = expr(); if (toks[i++] !== ')') throw 0; return { v: e.v, tex: '\\left(' + e.tex + '\\right)' }; }
+    throw 0;
+  }
+  function power() {
+    var b = atom();
+    if (peek() === '^') {
+      i++; var sg = false;
+      if (peek() === '-') { sg = true; i++; } else if (peek() === '+') i++;
+      var x = power();
+      return { v: Math.pow(b.v, sg ? -x.v : x.v), tex: b.tex + '^{' + (sg ? '-' : '') + x.tex + '}' };
+    }
+    return b;
+  }
+  function signed() {
+    var neg = false;
+    if (peek() === '-') { neg = true; i++; } else if (peek() === '+') i++;
+    var p = power();
+    return neg ? { v: -p.v, tex: '-' + p.tex } : p;
+  }
+  function term() {
+    var a = power();
+    for (;;) {
+      var t = peek(), b;
+      if (t === '*') { i++; b = signed(); a = { v: a.v * b.v, tex: a.tex + '\\cdot ' + b.tex }; }
+      else if (t === '/') { i++; b = signed(); if (b.v === 0) throw 0; a = { v: a.v / b.v, tex: '\\frac{' + a.tex + '}{' + b.tex + '}' }; }
+      else if (isStart(t)) { b = power(); a = { v: a.v * b.v, tex: a.tex + ' ' + b.tex }; }
+      else return a;
+    }
+  }
+  function expr() {
+    var neg = false;
+    if (peek() === '-') { neg = true; i++; } else if (peek() === '+') i++;
+    var a = term();
+    if (neg) a = { v: -a.v, tex: '-' + a.tex };
+    for (;;) {
+      var t = peek(), b;
+      if (t === '+') { i++; b = term(); a = { v: a.v + b.v, tex: a.tex + '+' + b.tex }; }
+      else if (t === '-') { i++; b = term(); a = { v: a.v - b.v, tex: a.tex + '-' + b.tex }; }
+      else return a;
+    }
+  }
+  try {
+    var r = expr();
+    if (i !== toks.length || !isFinite(r.v)) return null;
+    return { v: r.v, tex: r.tex, pi: hasPi };
+  } catch (err) { return null; }
+}
 function parseAns(raw) {
-  var s = String(raw).trim().replace(/[\u2212\u2013\u2014]/g, '-').replace(/,/g, '.');
+  var s = String(raw).trim().replace(/[\u2212\u2013\u2014]/g, '-').replace(/,/g, '.')
+    .replace(/[\u00D7\u00B7]/g, '*').replace(/\u00F7/g, '/').replace(/sqrt/gi, '\u221A').replace(/pi/gi, '\u03C0');
   var mx = s.match(/^([+-]?)(\d+)\s+(\d+)\/(\d+)$/);
   if (mx) {
     var dd = +mx[4]; if (!dd) return null;
     var val = +mx[2] + (+mx[3]) / dd;
-    return { v: mx[1] === '-' ? -val : val, tex: (mx[1] === '-' ? '-' : '') + mx[2] + '\\frac{' + mx[3] + '}{' + mx[4] + '}' };
+    return { v: mx[1] === '-' ? -val : val, tex: (mx[1] === '-' ? '-' : '') + mx[2] + '\\frac{' + mx[3] + '}{' + mx[4] + '}', pi: false };
   }
-  s = s.replace(/\s+/g, '');
-  var m = s.match(/^([+-]?(?:\d+(?:\.\d+)?|\.\d+))(?:\/([+-]?(?:\d+(?:\.\d+)?|\.\d+)))?$/);
-  if (!m) return null;
-  var a = parseFloat(m[1]), b = m[2] === undefined ? 1 : parseFloat(m[2]);
-  if (!b) return null;
-  var tex;
-  if (m[2] === undefined) tex = m[1].replace(/^\+/, '');
-  else tex = (((a < 0) !== (b < 0)) ? '-' : '') + '\\frac{' + Math.abs(a) + '}{' + Math.abs(b) + '}';
-  return { v: a / b, tex: tex };
+  return evalExpr(s.replace(/\s+/g, ''));
 }
 function updPrev(id) {
   var el = document.getElementById(id), pv = document.getElementById(id + 'Pv');
   if (!el || !pv) return;
   var raw = el.value.trim();
-  if (!raw || /[\/.\-]$/.test(raw)) { pv.textContent = ''; return; }
+  if (!raw || /[\/.\-+*^\u00D7\u00F7\u221A(]$/.test(raw)) { pv.textContent = ''; return; }
   var r = parseAns(raw);
-  if (!r) { pv.textContent = 'Format belum terbaca. Contoh: 12, -3/4, 2.5'; return; }
+  if (!r) { pv.textContent = 'Format belum terbaca. Contoh: 12, -3/4, 64π/15'; return; }
   pv.textContent = 'Terbaca: $' + r.tex + '$';
   typeset(pv);
 }
 function ansTools(id) {
-  var keys = ['7', '8', '9', '\u232B', '4', '5', '6', 'C', '1', '2', '3', '/', '\u00B1', '0', '.', 'OK'];
+  var keys = [['\u03C0', '\u03C0', 1], ['\u221A', '\u221A', 1], ['^', '^', 1], ['(', '(', 1], [')', ')', 1],
+    ['7', '7'], ['8', '8'], ['9', '9'], ['\u232B', 'BK', 1], ['C', 'CL', 1],
+    ['4', '4'], ['5', '5'], ['6', '6'], ['\u00D7', '*', 1], ['/', '/', 1],
+    ['1', '1'], ['2', '2'], ['3', '3'], ['\u2212', '-', 1], ['+', '+', 1],
+    ['\u00B1', 'SG', 1], ['0', '0'], ['.', '.', 1], ['OK', 'OK', 2]];
   var s = '<div id="' + id + 'Pad" class="ans-pad no-print">';
   keys.forEach(function (k) {
-    s += '<button type="button" class="ans-key' + (k === 'OK' ? ' ok' : (/[0-9]/.test(k) ? '' : ' op')) + '" onmousedown="event.preventDefault()" onclick="padKey(\'' + id + '\',\'' + k + '\')">' + k + '</button>';
+    s += '<button type="button" class="ans-key' + (k[2] === 2 ? ' ok wide' : (k[2] ? ' op' : '')) + '" onmousedown="event.preventDefault()" onclick="padKey(\'' + id + '\',\'' + k[1] + '\')">' + k[0] + '</button>';
   });
   return s + '</div><p id="' + id + 'Pv" class="text-sm mt-1" aria-live="polite"></p>';
 }
 function padKey(id, k) {
   var el = document.getElementById(id), v = el.value;
   if (k === 'OK') { var f = window[el.dataset.okFn]; if (f) f(el.dataset.okArg); return; }
-  if (k === '\u232B') v = v.slice(0, -1);
-  else if (k === 'C') v = '';
-  else if (k === '\u00B1') v = v.charAt(0) === '-' ? v.slice(1) : '-' + v;
+  if (k === 'BK') v = v.slice(0, -1);
+  else if (k === 'CL') v = '';
+  else if (k === 'SG') v = v.charAt(0) === '-' ? v.slice(1) : '-' + v;
   else v += k;
   el.value = v; updPrev(id);
 }
@@ -722,7 +779,8 @@ function dynCheck(p) {
   if (!raw) { fb.style.color = '#8a4b06'; fb.textContent = 'Isi jawabanmu dulu.'; return; }
   var pa = parseAns(raw);
   if (!pa) { fb.style.color = '#8a4b06'; fb.textContent = 'Format belum terbaca. Contoh: 12, -3/4, atau 2.5.'; return; }
-  var ok = Math.abs(pa.v - d.cur.ans) < 0.02;
+  var usePi = pa.pi && d.cur.pi;
+  var ok = Math.abs(pa.v - (usePi ? d.cur.ans * Math.PI : d.cur.ans)) < (usePi ? 0.02 * Math.PI : 0.02);
   if (!d.cur.counted) { d.cur.counted = true; d.t++; if (ok) d.b++; }
   fb.style.color = ok ? '#116a3a' : '#9b1c1c';
   fb.textContent = ok ? 'Benar! Jawabannya ' + (d.cur.disp || d.cur.ans) + '.' : 'Belum tepat. Periksa kembali perhitunganmu, atau buka pembahasan.';
@@ -842,7 +900,7 @@ function genTd() {
 }
 function genVl() {
   var t = rnd(1, 3), o = {}, cfg, num, den;
-  var tail = ' Jawab dalam satuan $\\pi$, yaitu nilai $V/\\pi$ (boleh pecahan seperti 8/3).';
+  var tail = ' Tuliskan jawabanmu dalam $\\pi$ (misalnya 8π/3, gunakan tombol π), atau cukup nilai $V/\\pi$.';
   if (t === 1) {
     var p = rnd(1, 3), T = rnd(1, 3), py = pl([[p, 'x']]);
     cfg = { f: function (x) { return p * x; }, lo: 0, hi: T, xmin: -0.4, xmax: T + 0.8, lf: 'y = ' + py, lpf: 0.5, alt: 'Daerah di bawah garis' };
@@ -865,7 +923,10 @@ function genVl() {
     o.sol = '<ol><li>Metode cakram dengan $f(x)=x+' + c + '$ pada $[0,' + T3 + ']$.</li><li>$$V=\\pi\\int_0^{' + T3 + '}(x+' + c + ')^2dx=\\pi\\Big[\\tfrac13(x+' + c + ')^3\\Big]_0^{' + T3 + '}=\\pi\\cdot\\tfrac{' + Math.pow(T3 + c, 3) + '-' + Math.pow(c, 3) + '}{3}=' + fr(num, den) + '\\pi$$</li></ol>';
   }
   o.fig = '<div class="cols2"><figure class="fig"><div>' + plotSVG(cfg) + '</div><figcaption class="text-sm">Daerah yang diputar</figcaption></figure><figure class="fig"><div>' + solidSVG(cfg) + '</div><figcaption class="text-sm">Benda putar</figcaption></figure></div>';
-  return fin(o, num, den);
+  fin(o, num, den); o.pi = true;
+  var g = gcd(num, den), na = num / g, nb = den / g;
+  o.disp = (na === 1 ? 'π' : na + 'π') + (nb > 1 ? '/' + nb : '');
+  return o;
 }
 function updateC() {
   var C = +document.getElementById('cSlider').value;
