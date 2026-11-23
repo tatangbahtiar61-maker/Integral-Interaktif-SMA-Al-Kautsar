@@ -208,7 +208,8 @@
     <div class="flex flex-wrap gap-2 mb-5" id="modeBar"><button class="filterbtn active" data-m="bank">Bank Soal</button><button class="filterbtn" data-m="kuis">Kuis Pilihan Ganda</button></div>
     <div id="bankPane">
     <h2 class="display text-2xl font-bold mb-1">Bank Soal Latihan Bertingkat</h2>
-    <p class="mb-4 text-slate-600">Pilih soal berdasarkan tingkat kesulitan, materi, atau gabungan keduanya (atau coba Kuis Pilihan Ganda). Kerjakan dulu di kertas, baru buka kunci jawaban untuk mencocokkan langkahmu.</p>
+    <p class="mb-4 text-slate-600">30 soal pilihan ganda bergaya Ujian Nasional (UN) SMA kurikulum KTSP. Kerjakan dulu di kertas, pilih jawaban A sampai E, lalu buka kunci dan pembahasan. Tombol <b>Soal Baru</b> membuat soal sejenis dengan angka berbeda. Kerjakan dulu di kertas, baru buka kunci jawaban untuk mencocokkan langkahmu.</p>
+    <button class="btn btn-teal mb-4 no-print" onclick="regenAll(); renderSoal()">Ganti Angka Semua Soal</button>
     <div class="mb-5 space-y-3">
       <div><p class="font-semibold mb-1">Tingkat kesulitan</p><div class="flex flex-wrap gap-2" id="filters"></div></div>
       <div><p class="font-semibold mb-1">Materi</p><div class="flex flex-wrap gap-2" id="topicFilters"></div></div>
@@ -217,7 +218,7 @@
     </div>
     <div id="kuisPane" style="display:none">
       <h2 class="display text-2xl font-bold mb-1">Kuis Pilihan Ganda</h2>
-      <p class="mb-4 text-slate-600">Pilih materi, lalu jawab soal satu per satu. Jawaban langsung dibahas dan skor ditampilkan di akhir.</p>
+      <p class="mb-4 text-slate-600">Soal pilihan ganda bergaya UN (A sampai E). Pilih materi, lalu jawab satu per satu; jawaban langsung dibahas dan skor ditampilkan di akhir. Setiap kuis dimulai dengan angka yang baru.</p>
       <div class="flex flex-wrap items-center gap-2 mb-4"><label for="kzTopic" class="font-semibold">Materi:</label><select id="kzTopic" class="border border-slate-300 rounded-lg px-2 py-1.5 bg-white"></select><button class="btn btn-teal" onclick="kzStart()">Mulai Kuis</button></div>
       <div id="kzBox" class="bg-white border border-slate-200 rounded-xl pad"></div>
   </section>
@@ -513,36 +514,343 @@ var SLIDES = [
   v: 'Langkah berikutnya: buka Tab <b>Bank Soal</b> dan kerjakan 10 soal dari mudah sampai HOTS.' }
 ];
 
-/* ---------- DATA SOAL (10 soal) ---------- */
-var SOAL = [
-{ lv: 'mudah', tp: 'tak', q: String.raw`Tentukan $\int (4x^3-6x^2+2x-7)\,dx$.`, a: String.raw`<ol><li>Integralkan tiap suku dengan aturan pangkat: $$\int 4x^3dx=x^4,\quad \int 6x^2dx=2x^3,\quad \int 2x\,dx=x^2,\quad \int 7\,dx=7x$$</li><li>Gabungkan: $$x^4-2x^3+x^2-7x+C$$</li></ol>` },
-{ lv: 'mudah', tp: 'tak', q: String.raw`Tentukan $\int (x^3+3\sqrt{x})\,dx$.`, a: String.raw`<ol><li>Ubah akar: $3\sqrt{x}=3x^{1/2}$.</li><li>$$\int x^3dx=\frac{x^4}{4},\qquad \int 3x^{1/2}dx=3\cdot\frac{x^{3/2}}{3/2}=2x^{3/2}$$</li><li>Hasil: $$\frac{x^4}{4}+2x^{3/2}+C$$</li></ol>` },
-{ lv: 'mudah', tp: 'tentu', q: String.raw`Hitunglah $\int_0^2 (3x^2+2x)\,dx$.`, a: String.raw`<ol><li>Antiturunan: $F(x)=x^3+x^2$.</li><li>$$\Big[x^3+x^2\Big]_0^2=(8+4)-(0+0)$$</li><li>Hasil: $12$.</li></ol>` },
-{ lv: 'mudah', tp: 'anti', q: String.raw`Diketahui $f'(x)=6x-2$ dan $f(1)=5$. Tentukan $f(x)$.`, a: String.raw`<ol><li>Integralkan: $$f(x)=\int (6x-2)\,dx=3x^2-2x+C$$</li><li>Gunakan $f(1)=5$: $$3(1)^2-2(1)+C=5 \Rightarrow 1+C=5 \Rightarrow C=4$$</li><li>Jadi $$f(x)=3x^2-2x+4$$</li></ol>` },
-{ lv: 'sedang', tp: 'subs', q: String.raw`Tentukan $\int x\sqrt{x^2+9}\,dx$.`, a: String.raw`<ol><li>Misal $u=x^2+9$, maka $du=2x\,dx$ sehingga $x\,dx=\tfrac12du$.</li><li>$$\int x\sqrt{x^2+9}\,dx=\tfrac12\int u^{1/2}du=\tfrac12\cdot\tfrac23u^{3/2}+C$$</li><li>Hasil: $$\tfrac13(x^2+9)^{3/2}+C$$</li></ol>` },
-{ lv: 'sedang', tp: 'parsial', q: String.raw`Tentukan $\int x(x+3)^4\,dx$ dengan integral parsial.`, a: String.raw`<ol><li>Pilih $u=x$, $du=dx$; $dv=(x+3)^4dx$, $v=\tfrac15(x+3)^5$.</li><li>$$\int x(x+3)^4dx=\tfrac15x(x+3)^5-\tfrac15\int (x+3)^5dx$$</li><li>$$=\tfrac15x(x+3)^5-\tfrac1{30}(x+3)^6+C$$</li><li>Sederhanakan: $$\tfrac1{30}(x+3)^5\big[6x-(x+3)\big]+C=\tfrac{1}{30}(x+3)^5(5x-3)+C$$</li></ol>` },
-{ lv: 'sedang', tp: 'luas', q: String.raw`Hitunglah luas daerah yang dibatasi oleh kurva $y=x^2-4x$ dan sumbu-$x$.`, a: String.raw`<ol><li>Titik potong sumbu-$x$: $x^2-4x=0 \Rightarrow x=0$ atau $x=4$.</li><li>Pada $[0,4]$ kurva berada di bawah sumbu-$x$ (uji $x=2$: $y=-4$), sehingga $$L=-\int_0^4(x^2-4x)\,dx$$</li><li>$$=-\Big[\tfrac13x^3-2x^2\Big]_0^4=-\Big(\tfrac{64}{3}-32\Big)=\tfrac{32}{3}$$</li></ol><p>Luas = $\dfrac{32}{3}$ satuan luas.</p>` },
-{ lv: 'sedang', tp: 'volume', q: String.raw`Daerah yang dibatasi oleh $y=x^2$, sumbu-$x$, dan garis $x=2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.`, a: String.raw`<ol><li>Metode cakram dengan $f(x)=x^2$ pada $[0,2]$.</li><li>$$V=\pi\int_0^2 (x^2)^2dx=\pi\int_0^2x^4dx$$</li><li>$$=\pi\Big[\tfrac15x^5\Big]_0^2=\pi\cdot\tfrac{32}{5}$$</li></ol><p>$V=\dfrac{32}{5}\pi$ satuan volume.</p>` },
-{ lv: 'sulit', tp: 'luas', q: String.raw`(HOTS) Diketahui $k>0$. Daerah yang dibatasi oleh kurva $y=x^2$ dan garis $y=kx$ memiliki luas $\dfrac92$ satuan luas. Tentukan nilai $k$.`, a: String.raw`<ol><li>Titik potong: $x^2=kx \Rightarrow x=0$ atau $x=k$.</li><li>Pada $[0,k]$ garis berada di atas parabola, sehingga $$L=\int_0^k (kx-x^2)\,dx=\Big[\tfrac k2x^2-\tfrac13x^3\Big]_0^k$$</li><li>$$L=\tfrac{k^3}{2}-\tfrac{k^3}{3}=\tfrac{k^3}{6}$$</li><li>Samakan dengan $\tfrac92$: $$\tfrac{k^3}{6}=\tfrac92 \Rightarrow k^3=27 \Rightarrow k=3$$</li></ol>` },
-{ lv: 'sulit', tp: 'volume', q: String.raw`(HOTS) Daerah yang dibatasi oleh kurva $y=\sqrt{x}$ dan $y=x^2$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.`, a: String.raw`<ol><li>Titik potong: $\sqrt{x}=x^2$. Kuadratkan: $x=x^4 \Rightarrow x(x^3-1)=0 \Rightarrow x=0$ atau $x=1$.</li><li>Pada $[0,1]$: uji $x=\tfrac14$, $\sqrt{x}=\tfrac12$ dan $x^2=\tfrac1{16}$. Jadi $y=\sqrt{x}$ di luar, $y=x^2$ di dalam.</li><li>Metode cincin: $$V=\pi\int_0^1\big[(\sqrt{x})^2-(x^2)^2\big]dx=\pi\int_0^1 (x-x^4)\,dx$$</li><li>$$=\pi\Big[\tfrac12x^2-\tfrac15x^5\Big]_0^1=\pi\Big(\tfrac12-\tfrac15\Big)=\tfrac{3}{10}\pi$$</li></ol><p>$V=\dfrac{3}{10}\pi$ satuan volume.</p>` },
-{ lv: 'mudah', tp: 'anti', q: String.raw`Tentukan antiderivatif umum dari $f(x)=8x^3-9x^2+4x-5$.`, a: String.raw`<ol><li>Antiderivatifkan tiap suku: $$8\cdot\frac{x^4}{4}-9\cdot\frac{x^3}{3}+4\cdot\frac{x^2}{2}-5x$$</li><li>Hasil: $$F(x)=2x^4-3x^3+2x^2-5x+C$$</li></ol>` },
-{ lv: 'sedang', tp: 'anti', q: String.raw`Kecepatan sebuah benda dinyatakan oleh $v(t)=3t^2-4t+5$ m/s. Jika posisi awalnya $s(0)=2$ m, tentukan posisi benda saat $t=2$ detik.`, a: String.raw`<ol><li>Posisi adalah antiderivatif kecepatan: $$s(t)=\int (3t^2-4t+5)\,dt=t^3-2t^2+5t+C$$</li><li>$s(0)=2 \Rightarrow C=2$, sehingga $s(t)=t^3-2t^2+5t+2$.</li><li>$$s(2)=8-8+10+2=12$$</li></ol><p>Posisi benda saat $t=2$ adalah $12$ m.</p>` },
-{ lv: 'sedang', tp: 'tak', q: String.raw`Tentukan $\int (2x-1)(x+3)\,dx$.`, a: String.raw`<ol><li>Jabarkan dahulu: $(2x-1)(x+3)=2x^2+6x-x-3=2x^2+5x-3$.</li><li>$$\int (2x^2+5x-3)\,dx=\frac23x^3+\frac52x^2-3x+C$$</li></ol>` },
-{ lv: 'mudah', tp: 'subs', q: String.raw`Tentukan $\int (4x+3)^5\,dx$.`, a: String.raw`<ol><li>Misal $u=4x+3$, maka $du=4\,dx$ sehingga $dx=\tfrac14du$.</li><li>$$\tfrac14\int u^5\,du=\tfrac14\cdot\frac{u^6}{6}+C=\frac{u^6}{24}+C$$</li><li>Hasil: $$\frac{(4x+3)^6}{24}+C$$</li></ol>` },
-{ lv: 'sulit', tp: 'subs', q: String.raw`(HOTS) Tentukan $\int x^3\sqrt{x^2+1}\,dx$.`, a: String.raw`<ol><li>Misal $u=x^2+1$, maka $du=2x\,dx$ dan $x^2=u-1$.</li><li>Pecah $x^3\,dx=x^2\cdot x\,dx=(u-1)\cdot\tfrac12du$, sehingga $$\tfrac12\int (u-1)u^{1/2}du=\tfrac12\int \big(u^{3/2}-u^{1/2}\big)du$$</li><li>$$=\tfrac12\Big(\tfrac25u^{5/2}-\tfrac23u^{3/2}\Big)+C=\tfrac15u^{5/2}-\tfrac13u^{3/2}+C$$</li><li>Kembalikan ke $x$ dan faktorkan: $$\tfrac1{15}(x^2+1)^{3/2}\big[3(x^2+1)-5\big]+C=\tfrac1{15}(x^2+1)^{3/2}(3x^2-2)+C$$</li></ol>` },
-{ lv: 'sedang', tp: 'parsial', q: String.raw`Tentukan $\int x(x-1)^3\,dx$ dengan integral parsial.`, a: String.raw`<ol><li>Pilih $u=x$, $du=dx$; $dv=(x-1)^3dx$, $v=\tfrac14(x-1)^4$.</li><li>$$\int x(x-1)^3dx=\tfrac14x(x-1)^4-\tfrac14\int (x-1)^4dx$$</li><li>$$=\tfrac14x(x-1)^4-\tfrac1{20}(x-1)^5+C$$</li><li>Sederhanakan: $$\tfrac1{20}(x-1)^4\big[5x-(x-1)\big]+C=\tfrac1{20}(x-1)^4(4x+1)+C$$</li></ol>` },
-{ lv: 'sulit', tp: 'parsial', q: String.raw`(HOTS) Hitunglah $\int_0^1 x\sqrt{1-x}\,dx$.`, a: String.raw`<ol><li>Pilih $u=x$, $dv=(1-x)^{1/2}dx$. Karena turunan bagian dalam $(1-x)$ adalah $-1$, maka $v=-\tfrac23(1-x)^{3/2}$.</li><li>$$\int_0^1 x\sqrt{1-x}\,dx=\Big[-\tfrac23x(1-x)^{3/2}\Big]_0^1+\tfrac23\int_0^1 (1-x)^{3/2}dx$$</li><li>Suku pertama bernilai $0-0=0$. Suku kedua: $$\tfrac23\Big[-\tfrac25(1-x)^{5/2}\Big]_0^1=\tfrac23\Big(0+\tfrac25\Big)=\tfrac{4}{15}$$</li><li>Jadi nilainya $\dfrac{4}{15}$.</li></ol>` },
-{ lv: 'mudah', tp: 'tentu', q: String.raw`Hitunglah $\int_1^4 \left(2x+\dfrac{1}{\sqrt{x}}\right)dx$.`, a: String.raw`<ol><li>Tulis $\dfrac1{\sqrt x}=x^{-1/2}$. Antiturunannya: $F(x)=x^2+2x^{1/2}$.</li><li>$$\Big[x^2+2\sqrt{x}\Big]_1^4=(16+4)-(1+2)=17$$</li></ol>` },
-{ lv: 'sedang', tp: 'tentu', q: String.raw`Diketahui $\int_0^3 f(x)\,dx=5$ dan $\int_2^3 f(x)\,dx=2$. Hitunglah $\int_0^2 \big(3f(x)+2\big)dx$.`, a: String.raw`<ol><li>Dengan sifat penjumlahan batas: $$\int_0^2 f(x)\,dx=\int_0^3 f(x)\,dx-\int_2^3 f(x)\,dx=5-2=3$$</li><li>$$\int_0^2 \big(3f(x)+2\big)dx=3\cdot 3+\Big[2x\Big]_0^2=9+4=13$$</li></ol>` },
-{ lv: 'sedang', tp: 'luas', q: String.raw`Hitung luas daerah yang dibatasi oleh kurva $y=x^2-6x+8$ dan sumbu-$x$.`, a: String.raw`<ol><li>Titik potong sumbu-$x$: $(x-2)(x-4)=0 \Rightarrow x=2$ atau $x=4$.</li><li>Pada $[2,4]$ kurva di bawah sumbu-$x$ (uji $x=3$: $y=-1$), sehingga $$L=-\int_2^4 (x^2-6x+8)\,dx$$</li><li>$$=-\Big[\tfrac13x^3-3x^2+8x\Big]_2^4=-\Big(\tfrac{16}{3}-\tfrac{20}{3}\Big)=\tfrac43$$</li></ol><p>Luas = $\dfrac43$ satuan luas.</p>` },
-{ lv: 'mudah', tp: 'volume', q: String.raw`Daerah yang dibatasi oleh $y=2x$, sumbu-$x$, dan garis $x=3$ diputar $360^\circ$ mengelilingi sumbu-$x$. Tentukan volume benda putarnya.`, a: String.raw`<ol><li>Metode cakram dengan $f(x)=2x$ pada $[0,3]$.</li><li>$$V=\pi\int_0^3 (2x)^2dx=\pi\int_0^3 4x^2dx=\pi\Big[\tfrac43x^3\Big]_0^3$$</li><li>$$=\pi\cdot 36=36\pi$$</li></ol><p>$V=36\pi$ satuan volume.</p>` },
-{ lv: 'mudah', tp: 'trig', q: String.raw`Tentukan $\int (3\sin x-2\cos x)\,dx$.`, a: String.raw`<ol><li>$$\int 3\sin x\,dx=-3\cos x,\qquad \int 2\cos x\,dx=2\sin x$$</li><li>Hasil: $$-3\cos x-2\sin x+C$$</li></ol>` },
-{ lv: 'mudah', tp: 'trig', q: String.raw`Tentukan $\int \cos(2x+1)\,dx$.`, a: String.raw`<ol><li>Gunakan $\int \cos(ax+b)\,dx=\tfrac1a\sin(ax+b)+C$ dengan $a=2$.</li><li>Hasil: $$\tfrac12\sin(2x+1)+C$$</li></ol>` },
-{ lv: 'sedang', tp: 'trig', q: String.raw`Tentukan $\int \sin^2x\cos x\,dx$.`, a: String.raw`<ol><li>Misal $u=\sin x$, maka $du=\cos x\,dx$.</li><li>$$\int u^2\,du=\tfrac13u^3+C$$</li><li>Hasil: $$\tfrac13\sin^3x+C$$</li></ol>` },
-{ lv: 'sedang', tp: 'trig', q: String.raw`Hitunglah $\int_0^{\pi/6}\cos 3x\,dx$.`, a: String.raw`<ol><li>Antiturunan: $\tfrac13\sin 3x$.</li><li>$$\Big[\tfrac13\sin 3x\Big]_0^{\pi/6}=\tfrac13\sin\tfrac\pi2-\tfrac13\sin 0=\tfrac13$$</li></ol>` },
-{ lv: 'sulit', tp: 'trig', q: String.raw`(HOTS) Tentukan $\int \sin 3x\cos x\,dx$.`, a: String.raw`<ol><li>Ubah hasil kali menjadi jumlah: $$\sin 3x\cos x=\tfrac12\big[\sin 4x+\sin 2x\big]$$</li><li>$$\int \tfrac12(\sin 4x+\sin 2x)\,dx=\tfrac12\Big(-\tfrac{\cos 4x}{4}-\tfrac{\cos 2x}{2}\Big)+C$$</li><li>Hasil: $$-\tfrac{\cos 4x}{8}-\tfrac{\cos 2x}{4}+C$$</li></ol>` },
-{ lv: 'sulit', tp: 'trig', q: String.raw`(HOTS) Hitunglah $\int_0^{\pi/2}\cos^2x\,dx$.`, a: String.raw`<ol><li>Turunkan pangkat: $\cos^2x=\dfrac{1+\cos 2x}{2}$.</li><li>$$\int_0^{\pi/2}\frac{1+\cos 2x}{2}\,dx=\frac12\Big[x+\frac{\sin 2x}{2}\Big]_0^{\pi/2}$$</li><li>$$=\frac12\Big[\Big(\frac\pi2+0\Big)-(0+0)\Big]=\frac\pi4$$</li></ol>` }
+/* ---------- 30 SOAL BERGAYA UJIAN NASIONAL SMA (KTSP): pilihan ganda A-E, angka berganti ---------- */
+var W = function (s) { return '$' + s + '$'; };
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function shuf(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function mk(correct, wrongs, keep) {
+  var seen = {}, w = [];
+  seen[correct] = 1;
+  wrongs.forEach(function (x) { if (!seen[x]) { seen[x] = 1; w.push(x); } });
+  if (w.length < 4) throw new Error('distraktor kurang');
+  if (!keep) shuf(w);
+  var list = shuf([correct].concat(w.slice(0, 4)));
+  return { o: list.map(W), a: list.indexOf(correct), ct: correct };
+}
+function qv(n, d, pi) {
+  if (n === 0) return '0';
+  var g = gcd(Math.abs(n), d); n /= g; d /= g;
+  var neg = n < 0 ? '-' : '', a = Math.abs(n), body;
+  if (pi) { var np = (a === 1 ? '' : a) + '\\pi'; body = d === 1 ? np : '\\frac{' + np + '}{' + d + '}'; }
+  else body = d === 1 ? String(a) : '\\frac{' + a + '}{' + d + '}';
+  return neg + body;
+}
+function nq(n, d, pi, extra, pos) {
+  var list = (extra || []).concat([[n + d, d], [n - d, d], [2 * n, d], [n, 2 * d], [n + 2 * d, d], [n - 2 * d, d], [3 * n, d], [n + 1, d], [n - 1, d], [-n, d]]);
+  var ws = [];
+  list.forEach(function (x) { if (pos && x[0] <= 0) return; ws.push(qv(x[0], x[1], pi)); });
+  return mk(qv(n, d, pi), ws, true);
+}
+function rt(terms) {
+  var s = '';
+  terms.forEach(function (t) {
+    var n = t[0], d = t[1], sym = t[2]; if (!n) return;
+    var g = gcd(Math.abs(n), d); n /= g; d /= g;
+    var ab = Math.abs(n), c = d === 1 ? ((ab === 1 && sym) ? '' : String(ab)) : '\\frac{' + ab + '}{' + d + '}';
+    s += (n < 0 ? '-' : (s ? '+' : '')) + c + sym;
+  });
+  return s || '0';
+}
+var pw = Math.pow;
+
+/* --- Antiderivatif --- */
+function tA1() {
+  var m = rnd(1, 3), n = pick([-3, -2, -1, 1, 2, 3]), c = pick([-4, -3, -2, 2, 3, 4, 5]), k = pick([-5, -4, -3, -2, 2, 3, 4, 5]);
+  var d1 = pl([[3 * m, 'x^2'], [2 * n, 'x'], [c, '']]), F = pl([[m, 'x^3'], [n, 'x^2'], [c, 'x'], [k, '']]);
+  var r = mk(F, [pl([[m, 'x^3'], [n, 'x^2'], [c, 'x']]), pl([[m, 'x^3'], [n, 'x^2'], [c, 'x'], [-k, '']]), pl([[3 * m, 'x^3'], [2 * n, 'x^2'], [c, 'x'], [k, '']]), pl([[m, 'x^3'], [n, 'x^2'], [k, '']]), pl([[m, 'x^3'], [-n, 'x^2'], [c, 'x'], [k, '']]), pl([[6 * m, 'x'], [2 * n, ''], [k, '']])]);
+  return { q: 'Diketahui $F\'(x)=' + d1 + '$ dan $F(0)=' + k + '$. Rumus $F(x)$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>$$F(x)=\\int (' + d1 + ')\\,dx=' + pl([[m, 'x^3'], [n, 'x^2'], [c, 'x']]) + '+C$$</li><li>$F(0)=' + k + '$ memberi $C=' + k + '$.</li><li>Jadi $F(x)=' + F + '$.</li></ol>',
+    t: { f: function (x) { return 3 * m * x * x + 2 * n * x + c; }, pt: [0, k] } };
+}
+function tA2() {
+  var a = rnd(1, 3), b = pick([-4, -3, -2, 2, 3, 4, 5]), p = pick([-2, -1, 1, 2, 3]), q = rnd(-5, 6);
+  var C = q - a * p * p - b * p, F = 'y=' + pl([[a, 'x^2'], [b, 'x'], [C, '']]);
+  var r = mk(F, ['y=' + pl([[a, 'x^2'], [b, 'x']]), 'y=' + pl([[a, 'x^2'], [b, 'x'], [q, '']]), 'y=' + pl([[2 * a, 'x^2'], [b, 'x'], [q - 2 * a * p * p - b * p, '']]), 'y=' + pl([[a, 'x^2'], [b, 'x'], [q + a * p * p + b * p, '']]), 'y=' + pl([[a, 'x^2'], [b, 'x'], [-C, '']]), 'y=' + pl([[2 * a, 'x'], [b, ''], [C, '']])]);
+  return { q: 'Gradien garis singgung suatu kurva di titik $(x,y)$ adalah $\\frac{dy}{dx}=' + pl([[2 * a, 'x'], [b, '']]) + '$. Jika kurva melalui titik $(' + p + ',' + q + ')$, maka persamaan kurva tersebut adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>$$y=\\int (' + pl([[2 * a, 'x'], [b, '']]) + ')\\,dx=' + pl([[a, 'x^2'], [b, 'x']]) + '+C$$</li><li>Titik $(' + p + ',' + q + ')$: $' + pl([[a * p * p, ''], [b * p, ''], [1, 'C']]) + '=' + q + ' \\Rightarrow C=' + C + '$.</li><li>Jadi ' + W(F) + '.</li></ol>',
+    t: { f: function (x) { return 2 * a * x + b; }, pt: [p, q] } };
+}
+function tA3() {
+  var m = rnd(1, 3), n = pick([-3, -2, -1, 1, 2, 3]), r0 = rnd(-4, 5), k = rnd(-5, 6), T = rnd(2, 3);
+  var v = pl([[3 * m, 't^2'], [2 * n, 't'], [r0, '']]);
+  var ans = m * pw(T, 3) + n * T * T + r0 * T + k, vT = 3 * m * T * T + 2 * n * T + r0;
+  var r = nq(ans, 1, false, [[ans - k, 1], [ans - 2 * k, 1], [vT, 1], [3 * m * pw(T, 3) + 2 * n * T * T + r0 * T + k, 1], [ans - 2 * k - 0, 1]]);
+  return { q: 'Sebuah benda bergerak lurus dengan kecepatan $v(t)=' + v + '$ m/s. Jika posisi awal benda $s(0)=' + k + '$ m, maka posisi benda pada saat $t=' + T + '$ detik adalah ... m.', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>$$s(t)=\\int v(t)\\,dt=' + pl([[m, 't^3'], [n, 't^2'], [r0, 't']]) + '+C$$</li><li>$s(0)=' + k + ' \\Rightarrow C=' + k + '$.</li><li>$$s(' + T + ')=' + pl([[m * pw(T, 3), ''], [n * T * T, ''], [r0 * T, ''], [k, '']]) + '=' + ans + '$$</li></ol>',
+    t: { g: function (t) { return 3 * m * t * t + 2 * n * t + r0; }, lo: 0, hi: T, add: k } };
+}
+
+/* --- Integral Tak Tentu --- */
+function tT1() {
+  var m = rnd(1, 3), n = rnd(1, 4), k = rnd(1, 3), c = pick([-5, -4, -3, -2, 2, 3, 4, 5]);
+  var f = pl([[4 * m, 'x^3'], [-3 * n, 'x^2'], [2 * k, 'x'], [c, '']]);
+  var F = pl([[m, 'x^4'], [-n, 'x^3'], [k, 'x^2'], [c, 'x']]) + '+C';
+  var r = mk(F, [pl([[4 * m, 'x^4'], [-3 * n, 'x^3'], [2 * k, 'x^2'], [c, 'x']]) + '+C', pl([[12 * m, 'x^2'], [-6 * n, 'x'], [2 * k, '']]) + '+C', pl([[m, 'x^4'], [n, 'x^3'], [k, 'x^2'], [c, 'x']]) + '+C', pl([[m, 'x^4'], [-n, 'x^3'], [k, 'x^2']]) + '+C', pl([[m, 'x^4'], [-n, 'x^3'], [k, 'x^2'], [c, '']]) + '+C', pl([[m, 'x^4'], [-3 * n, 'x^3'], [2 * k, 'x^2'], [c, 'x']]) + '+C']);
+  return { q: 'Hasil dari $\\int (' + f + ')\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Integralkan suku demi suku dengan $\\int ax^n dx=\\frac{a}{n+1}x^{n+1}$.</li><li>$$' + F + '$$</li></ol>',
+    t: { f: function (x) { return 4 * m * pw(x, 3) - 3 * n * x * x + 2 * k * x + c; } } };
+}
+function tT2() {
+  var a = rnd(1, 3), b = pick([-3, -2, -1, 1, 2, 3]), c = rnd(1, 2), d = pick([-3, -2, -1, 1, 2, 3, 4]);
+  var A = pl([[a, 'x'], [b, '']]), B = pl([[c, 'x'], [d, '']]);
+  var x2 = a * c, x1 = a * d + b * c, x0 = b * d;
+  var F = rt([[x2, 3, 'x^3'], [x1, 2, 'x^2'], [x0, 1, 'x']]) + '+C';
+  var r = mk(F, [rt([[x2, 2, 'x^3'], [x1, 2, 'x^2'], [x0, 1, 'x']]) + '+C', rt([[x2, 3, 'x^3'], [x1, 1, 'x^2'], [x0, 1, 'x']]) + '+C', rt([[x2, 3, 'x^3'], [x1, 2, 'x^2'], [x0, 1, '']]) + '+C', '\\left(' + rt([[a, 2, 'x^2'], [b, 1, 'x']]) + '\\right)\\left(' + rt([[c, 2, 'x^2'], [d, 1, 'x']]) + '\\right)+C', rt([[x2, 3, 'x^3'], [-x1, 2, 'x^2'], [x0, 1, 'x']]) + '+C', rt([[x2, 1, 'x^2'], [x1, 1, 'x'], [x0, 1, '']]) + '+C']);
+  return { q: 'Hasil dari $\\int (' + A + ')(' + B + ')\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Jabarkan: $(' + A + ')(' + B + ')=' + pl([[x2, 'x^2'], [x1, 'x'], [x0, '']]) + '$.</li><li>Integralkan: $$' + F + '$$</li></ol>',
+    t: { f: function (x) { return (a * x + b) * (c * x + d); } } };
+}
+function tT3() {
+  var a = rnd(2, 4), b = pick([-3, -2, -1, 1, 2, 3, 4, 5]), n = rnd(2, 4), lin = pl([[a, 'x'], [b, '']]);
+  var F = '\\frac{(' + lin + ')^{' + (n + 1) + '}}{' + (a * (n + 1)) + '}+C';
+  var r = mk(F, ['\\frac{(' + lin + ')^{' + (n + 1) + '}}{' + (n + 1) + '}+C', '\\frac{(' + lin + ')^{' + (n + 1) + '}}{' + a + '}+C', '\\frac{' + a + '(' + lin + ')^{' + (n + 1) + '}}{' + (n + 1) + '}+C', '(' + lin + ')^{' + (n + 1) + '}+C', '\\frac{(' + lin + ')^{' + n + '}}{' + (a * n) + '}+C']);
+  return { q: 'Hasil dari $\\int (' + lin + ')^{' + n + '}\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Gunakan $\\int (ax+b)^n dx=\\dfrac{(ax+b)^{n+1}}{a(n+1)}+C$ dengan $a=' + a + '$ dan $n=' + n + '$.</li><li>$$' + F + '$$</li></ol>',
+    t: { f: function (x) { return pw(a * x + b, n); } } };
+}
+
+/* --- Substitusi --- */
+function tS1() {
+  var m = rnd(1, 3), c = rnd(1, 4), n = rnd(2, 5), base = '(x^2+' + c + ')';
+  var F = rt([[m, n + 1, base + '^{' + (n + 1) + '}']]) + '+C';
+  var r = mk(F, [rt([[m, 1, base + '^{' + (n + 1) + '}']]) + '+C', rt([[2 * m, n + 1, base + '^{' + (n + 1) + '}']]) + '+C', rt([[m, n, base + '^{' + n + '}']]) + '+C', rt([[1, n + 1, base + '^{' + (n + 1) + '}']]) + '+C', rt([[m, 2 * (n + 1), base + '^{' + (n + 1) + '}']]) + '+C']);
+  return { q: 'Hasil dari $\\int ' + pl([[2 * m, 'x']]) + base + '^{' + n + '}\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Misal $u=x^2+' + c + '$, maka $du=2x\\,dx$ sehingga $' + pl([[2 * m, 'x']]) + '\\,dx=' + (m === 1 ? '' : m) + '\\,du$.</li><li>$$' + (m === 1 ? '' : m) + '\\int u^{' + n + '}du=' + rt([[m, n + 1, 'u^{' + (n + 1) + '}']]) + '+C$$</li><li>Kembalikan: $' + F + '$.</li></ol>',
+    t: { f: function (x) { return 2 * m * x * pw(x * x + c, n); } } };
+}
+function tS2() {
+  var m = rnd(1, 3), c = rnd(1, 5), base = '(x^3+' + c + ')';
+  var F = rt([[2 * m, 3, base + '^{3/2}']]) + '+C';
+  var r = mk(F, [rt([[m, 1, base + '^{3/2}']]) + '+C', rt([[3 * m, 2, base + '^{3/2}']]) + '+C', rt([[m, 3, base + '^{3/2}']]) + '+C', rt([[2 * m, 3, base + '^{1/2}']]) + '+C', rt([[m, 3, base + '^{1/2}']]) + '+C']);
+  return { q: 'Hasil dari $\\int ' + pl([[3 * m, 'x^2']]) + '\\sqrt{x^3+' + c + '}\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Misal $u=x^3+' + c + '$, maka $du=3x^2\\,dx$ sehingga $' + pl([[3 * m, 'x^2']]) + '\\,dx=' + (m === 1 ? '' : m) + '\\,du$.</li><li>$$' + (m === 1 ? '' : m) + '\\int u^{1/2}du=' + rt([[2 * m, 3, 'u^{3/2}']]) + '+C$$</li><li>Kembalikan: $' + F + '$.</li></ol>',
+    t: { f: function (x) { return 3 * m * x * x * Math.sqrt(pw(x, 3) + c); } } };
+}
+function tS3() {
+  var m = rnd(1, 3), c = rnd(1, 3), n = rnd(2, 3), T = rnd(1, 2), U = T * T + c;
+  var num = m * (pw(U, n + 1) - pw(c, n + 1)), den = n + 1;
+  var r = nq(num, den, false, [[m * pw(U, n + 1), den], [pw(U, n + 1) - pw(c, n + 1), den], [num, n], [m * (pw(T, 2 * n + 2) - 0), den]], true);
+  return { q: 'Nilai dari $\\int_0^{' + T + '} ' + pl([[2 * m, 'x']]) + '(x^2+' + c + ')^{' + n + '}\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Misal $u=x^2+' + c + '$, $du=2x\\,dx$. Batas: $x=0\\Rightarrow u=' + c + '$ dan $x=' + T + '\\Rightarrow u=' + U + '$.</li><li>$$' + (m === 1 ? '' : m) + '\\int_{' + c + '}^{' + U + '}u^{' + n + '}du=\\frac{' + (m === 1 ? '' : m + '(') + pw(U, n + 1) + '-' + pw(c, n + 1) + (m === 1 ? '' : ')') + '}{' + den + '}=' + qv(num, den) + '$$</li></ol>',
+    t: { g: function (x) { return 2 * m * x * pw(x * x + c, n); }, lo: 0, hi: T } };
+}
+function tS4() {
+  var c = rnd(1, 4), b5 = '(x^2+' + c + ')^{5/2}', b3 = '(x^2+' + c + ')^{3/2}';
+  var F = rt([[1, 5, b5], [-c, 3, b3]]) + '+C';
+  var r = mk(F, [rt([[1, 5, b5], [c, 3, b3]]) + '+C', rt([[1, 3, b5], [-c, 5, b3]]) + '+C', rt([[1, 5, b5], [-c, 1, b3]]) + '+C', rt([[2, 5, b5], [-2 * c, 3, b3]]) + '+C', rt([[1, 5, b5], [-1, 3, b3]]) + '+C', rt([[1, 3, b3]]) + '+C']);
+  return { q: 'Hasil dari $\\int x^3\\sqrt{x^2+' + c + '}\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Misal $u=x^2+' + c + '$, maka $du=2x\\,dx$ dan $x^2=u-' + c + '$.</li><li>$x^3dx=x^2\\cdot x\\,dx=(u-' + c + ')\\cdot\\tfrac12du$, sehingga $$\\tfrac12\\int (u^{3/2}-' + (c === 1 ? '' : c) + 'u^{1/2})\\,du=' + rt([[1, 5, 'u^{5/2}'], [-c, 3, 'u^{3/2}']]) + '+C$$</li><li>Kembalikan: $' + F + '$.</li></ol>',
+    t: { f: function (x) { return pw(x, 3) * Math.sqrt(x * x + c); } } };
+}
+
+/* --- Parsial --- */
+function tP1() {
+  var n = rnd(2, 3), q = rnd(1, 3), a1 = 'x(x+' + q + ')^{' + (n + 1) + '}', a2 = '(x+' + q + ')^{' + (n + 2) + '}';
+  var F = rt([[1, n + 1, a1], [-1, (n + 1) * (n + 2), a2]]) + '+C';
+  var r = mk(F, [rt([[1, n + 1, a1], [1, (n + 1) * (n + 2), a2]]) + '+C', rt([[1, n + 1, a1], [-1, n + 2, a2]]) + '+C', rt([[1, n + 1, a1], [-1, n + 1, '(x+' + q + ')^{' + (n + 1) + '}']]) + '+C', rt([[1, n, 'x(x+' + q + ')^{' + n + '}'], [-1, n * (n + 1), '(x+' + q + ')^{' + (n + 1) + '}']]) + '+C', rt([[1, 1, a1], [-1, (n + 1) * (n + 2), a2]]) + '+C']);
+  return { q: 'Hasil dari $\\int x(x+' + q + ')^{' + n + '}\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Parsial: $u=x$, $dv=(x+' + q + ')^{' + n + '}dx$, sehingga $v=\\tfrac{(x+' + q + ')^{' + (n + 1) + '}}{' + (n + 1) + '}$.</li><li>$$\\int u\\,dv=uv-\\int v\\,du=\\frac{x(x+' + q + ')^{' + (n + 1) + '}}{' + (n + 1) + '}-\\frac1{' + (n + 1) + '}\\int (x+' + q + ')^{' + (n + 1) + '}dx$$</li><li>Hasil: $' + F + '$.</li></ol>',
+    t: { f: function (x) { return x * pw(x + q, n); } } };
+}
+function tP2() {
+  var k = rnd(1, 3), cosB = Math.random() < 0.5, ka = (k === 1 ? '' : k) + 'x', S = '\\sin ' + ka, C = '\\cos ' + ka, F, wr, itg;
+  if (cosB) {
+    itg = 'x\\cos ' + ka;
+    F = rt([[1, k, 'x' + S], [1, k * k, C]]) + '+C';
+    wr = [rt([[1, k, 'x' + S], [-1, k * k, C]]), rt([[k, 1, 'x' + S], [1, k * k, C]]), rt([[1, k, 'x' + S], [1, k, C]]), rt([[-1, k, 'x' + C], [1, k * k, S]]), rt([[1, k, 'x' + C], [1, k * k, S]]), rt([[1, k, 'x' + S]]), rt([[-1, k, 'x' + S], [1, k * k, C]])];
+  } else {
+    itg = 'x\\sin ' + ka;
+    F = rt([[-1, k, 'x' + C], [1, k * k, S]]) + '+C';
+    wr = [rt([[1, k, 'x' + C], [1, k * k, S]]), rt([[-1, k, 'x' + C], [-1, k * k, S]]), rt([[-k, 1, 'x' + C], [1, k * k, S]]), rt([[1, k, 'x' + S], [1, k * k, C]]), rt([[-1, k, 'x' + C]]), rt([[-1, k, 'x' + C], [1, k, S]]), rt([[1, k, 'x' + C], [-1, k * k, S]])];
+  }
+  var r = mk(F, wr.map(function (x) { return x + '+C'; }));
+  return { q: 'Hasil dari $\\int ' + itg + '\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Parsial: $u=x$ dan $dv=' + (cosB ? C : S) + '\\,dx$, sehingga $v=' + (cosB ? rt([[1, k, S]]) : rt([[-1, k, C]])) + '$.</li><li>$$\\int u\\,dv=uv-\\int v\\,du$$ memberi $' + F + '$.</li></ol>',
+    t: { f: function (x) { return x * (cosB ? Math.cos(k * x) : Math.sin(k * x)); } } };
+}
+function tP3() {
+  var n = rnd(1, 2), q = rnd(1, 3), T = rnd(1, 2);
+  var A = T * pw(T + q, n + 1), B = pw(T + q, n + 2) - pw(q, n + 2), num = A * (n + 2) - B, den = (n + 1) * (n + 2);
+  var r = nq(num, den, false, [[A * (n + 2) + B, den], [A * (n + 2), den], [num, n + 1], [B, den], [A, n + 1]], true);
+  return { q: 'Nilai dari $\\int_0^{' + T + '} x(x+' + q + ')^{' + n + '}\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Parsial: $u=x$, $dv=(x+' + q + ')^{' + n + '}dx$, $v=\\tfrac{(x+' + q + ')^{' + (n + 1) + '}}{' + (n + 1) + '}$.</li><li>$$\\Big[\\tfrac{x(x+' + q + ')^{' + (n + 1) + '}}{' + (n + 1) + '}\\Big]_0^{' + T + '}-\\tfrac1{' + (n + 1) + '}\\Big[\\tfrac{(x+' + q + ')^{' + (n + 2) + '}}{' + (n + 2) + '}\\Big]_0^{' + T + '}=' + qv(A, n + 1) + '-' + qv(B, den) + '=' + qv(num, den) + '$$</li></ol>',
+    t: { g: function (x) { return x * pw(x + q, n); }, lo: 0, hi: T } };
+}
+
+/* --- Trigonometri --- */
+function tR1() {
+  var a = pick([-4, -3, -2, -1, 1, 2, 3, 4, 5]), b;
+  do { b = pick([-4, -3, -2, -1, 1, 2, 3, 4, 5]); } while (Math.abs(b) === Math.abs(a));
+  var f = pl([[a, '\\sin x'], [b, '\\cos x']]), F = pl([[-a, '\\cos x'], [b, '\\sin x']]) + '+C';
+  var r = mk(F, [pl([[a, '\\cos x'], [b, '\\sin x']]) + '+C', pl([[-a, '\\cos x'], [-b, '\\sin x']]) + '+C', pl([[a, '\\cos x'], [-b, '\\sin x']]) + '+C', pl([[-a, '\\sin x'], [b, '\\cos x']]) + '+C', pl([[a, '\\sin x'], [-b, '\\cos x']]) + '+C']);
+  return { q: 'Hasil dari $\\int (' + f + ')\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>$\\int \\sin x\\,dx=-\\cos x$ dan $\\int \\cos x\\,dx=\\sin x$.</li><li>Hasil: $' + F + '$.</li></ol>',
+    t: { f: function (x) { return a * Math.sin(x) + b * Math.cos(x); } } };
+}
+function tR2() {
+  var k = rnd(2, 4), c = pick([-2, -1, 1, 2, 3]), A = rnd(1, 5), lin = pl([[k, 'x'], [c, '']]), sinB = Math.random() < 0.5;
+  var S = '\\sin(' + lin + ')', C = '\\cos(' + lin + ')', F, wr;
+  if (sinB) { F = rt([[-A, k, C]]); wr = [rt([[A, k, C]]), rt([[-A, 1, C]]), rt([[-A * k, 1, C]]), rt([[A, k, S]]), rt([[-A, k, S]])]; }
+  else { F = rt([[A, k, S]]); wr = [rt([[-A, k, S]]), rt([[A, 1, S]]), rt([[A * k, 1, S]]), rt([[A, k, C]]), rt([[-A, k, C]])]; }
+  var r = mk(F + '+C', wr.map(function (x) { return x + '+C'; }));
+  return { q: 'Hasil dari $\\int ' + (A === 1 ? '' : A) + (sinB ? S : C) + '\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>$\\int ' + (sinB ? '\\sin' : '\\cos') + '(ax+b)\\,dx=' + (sinB ? '-' : '') + '\\frac1a' + (sinB ? '\\cos' : '\\sin') + '(ax+b)$ dengan $a=' + k + '$.</li><li>Hasil: $' + F + '+C$.</li></ol>',
+    t: { f: function (x) { return A * (sinB ? Math.sin(k * x + c) : Math.cos(k * x + c)); } } };
+}
+function tR3() {
+  var n = rnd(2, 4), sinF = Math.random() < 0.5, e1 = n + 1, F, wr, itg;
+  if (sinF) {
+    itg = '\\sin^{' + n + '}x\\cos x'; F = rt([[1, e1, '\\sin^{' + e1 + '}x']]);
+    wr = [rt([[-1, e1, '\\sin^{' + e1 + '}x']]), rt([[1, n, '\\sin^{' + n + '}x']]), rt([[1, e1, '\\cos^{' + e1 + '}x']]), rt([[-1, e1, '\\cos^{' + e1 + '}x']]), rt([[1, 1, '\\sin^{' + e1 + '}x']])];
+  } else {
+    itg = '\\cos^{' + n + '}x\\sin x'; F = rt([[-1, e1, '\\cos^{' + e1 + '}x']]);
+    wr = [rt([[1, e1, '\\cos^{' + e1 + '}x']]), rt([[-1, n, '\\cos^{' + n + '}x']]), rt([[1, e1, '\\sin^{' + e1 + '}x']]), rt([[-1, e1, '\\sin^{' + e1 + '}x']]), rt([[-1, 1, '\\cos^{' + e1 + '}x']])];
+  }
+  var r = mk(F + '+C', wr.map(function (x) { return x + '+C'; }));
+  return { q: 'Hasil dari $\\int ' + itg + '\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Misal $u=' + (sinF ? '\\sin x' : '\\cos x') + '$, maka $du=' + (sinF ? '' : '-') + (sinF ? '\\cos x' : '\\sin x') + '\\,dx$.</li><li>$$' + (sinF ? '' : '-') + '\\int u^{' + n + '}du=' + F + '+C$$</li></ol>',
+    t: { f: function (x) { return sinF ? pw(Math.sin(x), n) * Math.cos(x) : pw(Math.cos(x), n) * Math.sin(x); } } };
+}
+function tR4() {
+  var k = rnd(1, 3), sinB = Math.random() < 0.5, s = sinB ? -1 : 1, a2 = (2 * k) + 'x', ka = (k === 1 ? '' : k) + 'x';
+  var F = rt([[1, 2, 'x'], [s, 4 * k, '\\sin ' + a2]]) + '+C';
+  var r = mk(F, [rt([[1, 2, 'x'], [-s, 4 * k, '\\sin ' + a2]]) + '+C', rt([[1, 2, 'x'], [s, 2 * k, '\\sin ' + a2]]) + '+C', rt([[1, 2, 'x'], [s, 4, '\\sin ' + a2]]) + '+C', rt([[1, 3, '\\sin^{3}' + ka]]) + '+C', rt([[1, 2, 'x'], [s, 4 * k, '\\cos ' + a2]]) + '+C', rt([[1, 1, 'x'], [s, 4 * k, '\\sin ' + a2]]) + '+C']);
+  return { q: 'Hasil dari $\\int ' + (sinB ? '\\sin' : '\\cos') + '^{2}' + ka + '\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Gunakan $' + (sinB ? '\\sin' : '\\cos') + '^2\\theta=\\dfrac{1' + (sinB ? '-' : '+') + '\\cos 2\\theta}{2}$ dengan $\\theta=' + ka + '$.</li><li>$$\\int \\tfrac12\\big(1' + (sinB ? '-' : '+') + '\\cos ' + a2 + '\\big)dx=' + F + '$$</li></ol>',
+    t: { f: function (x) { return sinB ? pw(Math.sin(k * x), 2) : pw(Math.cos(k * x), 2); } } };
+}
+function tR5() {
+  var m = rnd(2, 4), A = rnd(1, 6), cosB = Math.random() < 0.5, as = A === 1 ? '' : A, num, den, hi, ex;
+  if (cosB) { num = A; den = m; hi = '\\pi/' + (2 * m); ex = [[A * m, 1], [2 * A, m], [A, 2 * m], [-A, m]]; }
+  else { num = 2 * A; den = m; hi = '\\pi/' + m; ex = [[A, m], [A * m, 1], [0, 1], [A, 2 * m]]; }
+  var r = nq(num, den, false, ex);
+  return { q: 'Nilai dari $\\int_0^{' + hi + '} ' + as + (cosB ? '\\cos ' : '\\sin ') + m + 'x\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>$$\\int ' + as + (cosB ? '\\cos ' : '\\sin ') + m + 'x\\,dx=' + (cosB ? '' : '-') + '\\frac{' + A + '}{' + m + '}' + (cosB ? '\\sin ' : '\\cos ') + m + 'x$$</li><li>' + (cosB ? 'Pada batas atas $' + m + 'x=\\tfrac\\pi2$: nilai $\\sin=1$, dan pada batas bawah $\\sin 0=0$.' : 'Pada batas atas $' + m + 'x=\\pi$: $\\cos\\pi=-1$, dan pada batas bawah $\\cos 0=1$.') + '</li><li>Hasil: $' + qv(num, den) + '$.</li></ol>',
+    t: { g: function (x) { return A * (cosB ? Math.cos(m * x) : Math.sin(m * x)); }, lo: 0, hi: cosB ? Math.PI / (2 * m) : Math.PI / m } };
+}
+function tR6() {
+  var pq = pick([[3, 1], [5, 1], [5, 3], [4, 2], [3, 2], [5, 2], [7, 1], [4, 1]]), p = pq[0], q = pq[1], s = p + q, d = p - q;
+  var as = (s === 1 ? '' : s) + 'x', ds = (d === 1 ? '' : d) + 'x', pa = (p === 1 ? '' : p) + 'x', qa = (q === 1 ? '' : q) + 'x';
+  var F = rt([[-1, 2 * s, '\\cos ' + as], [-1, 2 * d, '\\cos ' + ds]]) + '+C';
+  var r = mk(F, [rt([[1, 2 * s, '\\cos ' + as], [1, 2 * d, '\\cos ' + ds]]) + '+C', rt([[-1, s, '\\cos ' + as], [-1, d, '\\cos ' + ds]]) + '+C', rt([[-1, 2 * s, '\\cos ' + as], [1, 2 * d, '\\cos ' + ds]]) + '+C', rt([[1, 2 * s, '\\sin ' + as], [1, 2 * d, '\\sin ' + ds]]) + '+C', rt([[-1, 2 * d, '\\cos ' + as], [-1, 2 * s, '\\cos ' + ds]]) + '+C']);
+  return { q: 'Hasil dari $\\int \\sin ' + pa + '\\cos ' + qa + '\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Ubah hasil kali menjadi jumlah: $\\sin A\\cos B=\\tfrac12[\\sin(A+B)+\\sin(A-B)]$, sehingga $$\\sin ' + pa + '\\cos ' + qa + '=\\tfrac12\\big(\\sin ' + as + '+\\sin ' + ds + '\\big)$$</li><li>Integralkan: $' + F + '$.</li></ol>',
+    t: { f: function (x) { return Math.sin(p * x) * Math.cos(q * x); } } };
+}
+
+/* --- Integral Tentu --- */
+function tD1() {
+  var p = 3 * rnd(1, 2), q = pick([-4, -2, 2, 4]), r0 = rnd(-3, 4), a = rnd(0, 1), b = rnd(2, 3);
+  var Fv = function (x) { return p / 3 * x * x * x + q / 2 * x * x + r0 * x; }, ans = Fv(b) - Fv(a);
+  var fv = function (x) { return p * x * x + q * x + r0; };
+  var f = pl([[p, 'x^2'], [q, 'x'], [r0, '']]);
+  var r = nq(ans, 1, false, [[Fv(b) + Fv(a), 1], [Fv(a) - Fv(b), 1], [Fv(b), 1], [fv(b) - fv(a), 1]]);
+  return { q: 'Hasil dari $\\int_{' + a + '}^{' + b + '}(' + f + ')\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Antiturunan: $F(x)=' + pl([[p / 3, 'x^3'], [q / 2, 'x^2'], [r0, 'x']]) + '$.</li><li>$$F(' + b + ')-F(' + a + ')=' + Fv(b) + '-(' + Fv(a) + ')=' + ans + '$$</li></ol>',
+    t: { g: fv, lo: a, hi: b } };
+}
+function tD2() {
+  var A = rnd(1, 6), B = rnd(1, 6), c = rnd(1, 3), d = c + rnd(1, 3), k = rnd(2, 3), m = pick([1, 2, 4]);
+  var ans = k * (A + B) + m * d;
+  var r = nq(ans, 1, false, [[k * (A + B) + m, 1], [k * A + B + m * d, 1], [k * (A + B), 1], [A + B + m * d, 1], [k * (A + B) + m * (d - c), 1]], true);
+  return { q: 'Diketahui $\\int_0^{' + c + '}f(x)\\,dx=' + A + '$ dan $\\int_{' + c + '}^{' + d + '}f(x)\\,dx=' + B + '$. Nilai $\\int_0^{' + d + '}\\big(' + k + 'f(x)+' + m + '\\big)dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>$\\int_0^{' + d + '}f(x)\\,dx=' + A + '+' + B + '=' + (A + B) + '$.</li><li>$$' + k + '\\cdot ' + (A + B) + '+\\Big[' + m + 'x\\Big]_0^{' + d + '}=' + (k * (A + B)) + '+' + (m * d) + '=' + ans + '$$</li></ol>',
+    t: { val: ans } };
+}
+function tD3() {
+  var a = pick([2, 4, 6]), b = pick([3, 6, 9]), ans = 15 * a / 2 + 14 * b / 3;
+  var r = nq(ans, 1, false, [[15 * a / 2 + 7 * b, 1], [15 * a + 14 * b / 3, 1], [15 * a / 2 + 28 * b / 3, 1], [15 * a / 2 + 2 * b / 3, 1]], true);
+  return { q: 'Hasil dari $\\int_1^4 (' + a + 'x+' + b + '\\sqrt{x})\\,dx$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Antiturunan: $' + (a / 2) + 'x^2+' + (2 * b / 3) + 'x^{3/2}$.</li><li>$$\\Big[' + (a / 2) + 'x^2+' + (2 * b / 3) + 'x^{3/2}\\Big]_1^4=(' + (8 * a + 8 * 2 * b / 3) + ')-(' + (a / 2 + 2 * b / 3) + ')=' + ans + '$$</li></ol>',
+    t: { g: function (x) { return a * x + b * Math.sqrt(x); }, lo: 1, hi: 4 } };
+}
+function tD4() {
+  var k = rnd(2, 4), s = rnd(1, 3), P = k * k + s * k;
+  var r = nq(k, 1, false, [[k + 1, 1], [k - 1, 1], [-(k + s), 1], [k + 2, 1], [P, 1]], true);
+  var r2 = mk(String(k), [String(k + 1), String(k - 1), String(-(k + s)), String(k + 2), String(P)]);
+  return { q: 'Jika $\\int_0^k (2x+' + s + ')\\,dx=' + P + '$ dengan $k>0$, maka nilai $k=\\ldots$', o: r2.o, a: r2.a, ct: r2.ct,
+    e: '<ol><li>$$\\int_0^k (2x+' + s + ')\\,dx=\\Big[x^2+' + s + 'x\\Big]_0^k=k^2+' + s + 'k$$</li><li>$k^2+' + s + 'k=' + P + ' \\Rightarrow k^2+' + s + 'k-' + P + '=0 \\Rightarrow (k-' + k + ')(k+' + (k + s) + ')=0$.</li><li>Karena $k>0$, maka $k=' + k + '$.</li></ol>',
+    t: { val: k } };
+}
+
+/* --- Luas Daerah --- */
+function tL1() {
+  var a = rnd(1, 4), h = rnd(2, 4), num = a * pw(h, 3), den = 3;
+  var r = nq(num, den, false, [[a * pw(h, 3), 1], [a * h * h, 2], [a * pw(h, 3), 2], [a * h * h, 3]], true);
+  return { q: 'Luas daerah yang dibatasi oleh kurva $y=' + pl([[a, 'x^2']]) + '$, sumbu $X$, dan garis $x=' + h + '$ adalah ... satuan luas.', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>$$L=\\int_0^{' + h + '} ' + pl([[a, 'x^2']]) + '\\,dx=\\Big[\\tfrac{' + a + '}{3}x^3\\Big]_0^{' + h + '}=\\tfrac{' + a + '\\cdot ' + pw(h, 3) + '}{3}=' + qv(num, den) + '$$</li></ol>',
+    t: { g: function (x) { return a * x * x; }, lo: 0, hi: h } };
+}
+function tL2() {
+  if (Math.random() < 0.5) {
+    var p = rnd(2, 6), num = pw(p, 3), den = 6;
+    var r = nq(num, den, false, [[pw(p, 3), 3], [pw(p, 3), 2], [pw(p, 3), 1], [p * p, 2]], true);
+    return { q: 'Luas daerah yang dibatasi oleh kurva $y=' + pl([[1, 'x^2'], [-p, 'x']]) + '$ dan sumbu $X$ adalah ... satuan luas.', o: r.o, a: r.a, ct: r.ct,
+      e: '<ol><li>Titik potong sumbu $X$: $x(x-' + p + ')=0 \\Rightarrow x=0$ atau $x=' + p + '$. Kurva berada di bawah sumbu $X$ pada $[0,' + p + ']$.</li><li>$$L=-\\int_0^{' + p + '}(x^2-' + p + 'x)\\,dx=-\\Big[\\tfrac13x^3-\\tfrac{' + p + '}{2}x^2\\Big]_0^{' + p + '}=' + qv(num, den) + '$$</li></ol>',
+      t: { g: function (x) { return Math.abs(x * x - p * x); }, lo: 0, hi: p } };
+  }
+  var c = rnd(1, 3), n2 = 4 * pw(c, 3), d2 = 3;
+  var r2 = nq(n2, d2, false, [[2 * pw(c, 3), 3], [pw(c, 3), 3], [8 * pw(c, 3), 3], [4 * c * c, 3]], true);
+  return { q: 'Luas daerah yang dibatasi oleh kurva $y=' + (c * c) + '-x^2$ dan sumbu $X$ adalah ... satuan luas.', o: r2.o, a: r2.a, ct: r2.ct,
+    e: '<ol><li>Titik potong sumbu $X$: $x=-' + c + '$ dan $x=' + c + '$.</li><li>$$L=\\int_{-' + c + '}^{' + c + '}(' + (c * c) + '-x^2)\\,dx=2\\Big[' + (c * c) + 'x-\\tfrac13x^3\\Big]_0^{' + c + '}=' + qv(n2, d2) + '$$</li></ol>',
+    t: { g: function (x) { return Math.abs(c * c - x * x); }, lo: -c, hi: c } };
+}
+function tL3() {
+  var a = rnd(-2, 1), d = rnd(1, 3), b = a + d, s = a + b, c = 0 - a * b, lin = pl([[s, 'x'], [c, '']]);
+  var num = pw(d, 3), den = 6;
+  var r = nq(num, den, false, [[pw(d, 3), 3], [pw(d, 3), 2], [d * d, 2], [pw(d, 3), 1]], true);
+  return { q: 'Luas daerah yang dibatasi oleh parabola $y=x^2$ dan garis $y=' + lin + '$ adalah ... satuan luas.', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Titik potong: $x^2=' + lin + ' \\Rightarrow ' + pl([[1, 'x^2'], [-s, 'x'], [-c, '']]) + '=0$, jadi $x=' + a + '$ dan $x=' + b + '$.</li><li>Garis berada di atas parabola pada $[' + a + ',' + b + ']$: $$L=\\int_{' + a + '}^{' + b + '}(' + lin + '-x^2)\\,dx=\\frac{(' + b + '-(' + a + '))^3}{6}=' + qv(num, den) + '$$</li></ol>',
+    t: { g: function (x) { return Math.abs(s * x + c - x * x); }, lo: a, hi: b } };
+}
+function tL4() {
+  var k = rnd(2, 4), A = qv(pw(k, 3), 6);
+  var r = mk(String(k), [String(k - 1), String(k + 1), String(2 * k), String(k + 2), String(k * k)]);
+  return { q: 'Luas daerah yang dibatasi oleh kurva $y=x^2$ dan garis $y=kx$ dengan $k>0$ adalah $' + A + '$ satuan luas. Nilai $k$ adalah ...', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Titik potong: $x^2=kx \\Rightarrow x=0$ atau $x=k$.</li><li>$$L=\\int_0^k (kx-x^2)\\,dx=\\Big[\\tfrac k2x^2-\\tfrac13x^3\\Big]_0^k=\\tfrac{k^3}{6}$$</li><li>$\\tfrac{k^3}{6}=' + A + ' \\Rightarrow k^3=' + pw(k, 3) + ' \\Rightarrow k=' + k + '$.</li></ol>',
+    t: { val: k } };
+}
+
+/* --- Volume Benda Putar --- */
+function tV1() {
+  var p = rnd(1, 3), T = rnd(1, 3), py = pl([[p, 'x']]), num = p * p * pw(T, 3), den = 3;
+  var r = nq(num, den, true, [[p * pw(T, 3), 3], [p * p * pw(T, 3), 1], [p * p * pw(T, 3), 2], [p * T * T, 3]], true);
+  return { q: 'Volume benda putar yang terjadi jika daerah yang dibatasi oleh kurva $y=' + py + '$, sumbu $X$, dan garis $x=' + T + '$ diputar mengelilingi sumbu $X$ sejauh $360^\\circ$ adalah ... satuan volume.', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Metode cakram: $$V=\\pi\\int_0^{' + T + '}(' + py + ')^2dx=\\pi\\Big[\\tfrac{' + (p * p) + '}{3}x^3\\Big]_0^{' + T + '}=' + qv(num, den, true) + '$$</li></ol>',
+    t: { g: function (x) { return Math.PI * p * p * x * x; }, lo: 0, hi: T } };
+}
+function tV2() {
+  var c = rnd(1, 3), T = rnd(1, 3), num = pw(T + c, 3) - pw(c, 3), den = 3;
+  var r = nq(num, den, true, [[pw(T + c, 3), 3], [pw(T, 3) + pw(c, 3), 3], [num, 1], [num, 2]], true);
+  return { q: 'Volume benda putar yang terjadi jika daerah yang dibatasi oleh kurva $y=x+' + c + '$, sumbu $X$, sumbu $Y$, dan garis $x=' + T + '$ diputar mengelilingi sumbu $X$ sejauh $360^\\circ$ adalah ... satuan volume.', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Metode cakram: $$V=\\pi\\int_0^{' + T + '}(x+' + c + ')^2dx=\\pi\\Big[\\tfrac13(x+' + c + ')^3\\Big]_0^{' + T + '}=\\pi\\cdot\\tfrac{' + pw(T + c, 3) + '-' + pw(c, 3) + '}{3}=' + qv(num, den, true) + '$$</li></ol>',
+    t: { g: function (x) { return Math.PI * (x + c) * (x + c); }, lo: 0, hi: T } };
+}
+function tV3() {
+  var p = rnd(1, 3), p5 = pw(p, 5), num = 2 * p5, den = 15, py = pl([[p, 'x']]);
+  var r = nq(num, den, true, [[p5, 30], [pw(p, 3), 6], [p5, 15], [2 * p5, 5]], true);
+  return { q: 'Daerah yang dibatasi oleh kurva $y=' + py + '$ dan $y=x^2$ diputar mengelilingi sumbu $X$ sejauh $360^\\circ$. Volume benda putar yang terjadi adalah ... satuan volume.', o: r.o, a: r.a, ct: r.ct,
+    e: '<ol><li>Titik potong: $' + py + '=x^2 \\Rightarrow x=0$ atau $x=' + p + '$. Garis di luar, parabola di dalam (metode cincin).</li><li>$$V=\\pi\\int_0^{' + p + '}\\big[(' + py + ')^2-(x^2)^2\\big]dx=\\pi\\Big[\\tfrac{' + (p * p) + '}{3}x^3-\\tfrac15x^5\\Big]_0^{' + p + '}=\\pi\\Big(\\tfrac{' + p5 + '}{3}-\\tfrac{' + p5 + '}{5}\\Big)=' + qv(num, den, true) + '$$</li></ol>',
+    t: { g: function (x) { return Math.PI * (p * p * x * x - pw(x, 4)); }, lo: 0, hi: p } };
+}
+
+var TPL = [
+  ['anti', 'mudah', tA1], ['anti', 'sedang', tA2], ['anti', 'sedang', tA3],
+  ['tak', 'mudah', tT1], ['tak', 'sedang', tT2], ['tak', 'mudah', tT3],
+  ['subs', 'mudah', tS1], ['subs', 'sedang', tS2], ['subs', 'sedang', tS3], ['subs', 'sulit', tS4],
+  ['parsial', 'sedang', tP1], ['parsial', 'sulit', tP2], ['parsial', 'sedang', tP3],
+  ['trig', 'mudah', tR1], ['trig', 'mudah', tR2], ['trig', 'sedang', tR3], ['trig', 'sedang', tR4], ['trig', 'sedang', tR5], ['trig', 'sulit', tR6],
+  ['tentu', 'mudah', tD1], ['tentu', 'sedang', tD2], ['tentu', 'sedang', tD3], ['tentu', 'sulit', tD4],
+  ['luas', 'mudah', tL1], ['luas', 'sedang', tL2], ['luas', 'sedang', tL3], ['luas', 'sulit', tL4],
+  ['volume', 'mudah', tV1], ['volume', 'sedang', tV2], ['volume', 'sulit', tV3]
 ];
+var INST = [];
+function genInst(t) {
+  for (var i = 0; i < 20; i++) { try { var o = t[2](); o.tp = t[0]; o.lv = t[1]; return o; } catch (e) {} }
+  throw new Error('gagal membuat soal');
+}
+function regenAll() { INST = TPL.map(genInst); }
+
 var LABEL = { mudah: 'Mudah', sedang: 'Sedang', sulit: 'Sulit / HOTS' };
 
 /* ---------- VISUALISASI &amp; LATIHAN LUAS DAERAH ---------- */
@@ -1346,30 +1654,10 @@ document.addEventListener('keydown', function (e) {
 
 /* ---------- SOAL ---------- */
 /* ---------- KUIS PILIHAN GANDA ---------- */
-var R = String.raw;
-var KUIS = [
- { tp: 'anti', q: R`Antiderivatif dari $f(x)=6x^2$ adalah ...`, o: [R`$2x^3+C$`, R`$3x^3+C$`, R`$12x+C$`, R`$6x^3+C$`], a: 0, e: R`<p>$\int 6x^2dx=6\cdot\frac{x^3}{3}=2x^3$, lalu tambahkan $C$.</p>` },
- { tp: 'anti', q: R`Jika $F'(x)=4x-3$ dan $F(1)=5$, maka $F(x)=\ldots$`, o: [R`$2x^2-3x+5$`, R`$4x^2-3x+6$`, R`$2x^2-3x+6$`, R`$2x^2-3x+4$`], a: 2, e: R`<p>$F(x)=2x^2-3x+C$. Dari $F(1)=5$: $2-3+C=5$, jadi $C=6$.</p>` },
- { tp: 'tak', q: R`$\int (3x^2-4x+1)\,dx=\ldots$`, o: [R`$x^3-2x^2+x+C$`, R`$6x-4+C$`, R`$x^3-4x^2+x+C$`, R`$3x^3-2x^2+x+C$`], a: 0, e: R`<p>Integralkan tiap suku dengan aturan pangkat: $x^3-2x^2+x+C$.</p>` },
- { tp: 'tak', q: R`$\int \sqrt{x}\,dx=\ldots$`, o: [R`$\tfrac12x^{-1/2}+C$`, R`$\tfrac32x^{3/2}+C$`, R`$\sqrt{x}+C$`, R`$\tfrac23x^{3/2}+C$`], a: 3, e: R`<p>$\sqrt{x}=x^{1/2}$ sehingga $\int x^{1/2}dx=\dfrac{x^{3/2}}{3/2}=\tfrac23x^{3/2}$.</p>` },
- { tp: 'subs', q: R`$\int 2x(x^2+1)^3\,dx=\ldots$`, o: [R`$(x^2+1)^4+C$`, R`$\tfrac{(x^2+1)^4}{8}+C$`, R`$\tfrac{(x^2+1)^4}{4}+C$`, R`$6(x^2+1)^2+C$`], a: 2, e: R`<p>Misal $u=x^2+1$, $du=2x\,dx$. Maka $\int u^3du=\tfrac{u^4}{4}+C$.</p>` },
- { tp: 'subs', q: R`$\int 3x^2(x^3+2)^5\,dx=\ldots$`, o: [R`$(x^3+2)^6+C$`, R`$\tfrac{(x^3+2)^6}{18}+C$`, R`$\tfrac{(x^3+2)^6}{3}+C$`, R`$\tfrac{(x^3+2)^6}{6}+C$`], a: 3, e: R`<p>Misal $u=x^3+2$, $du=3x^2dx$. Maka $\int u^5du=\tfrac{u^6}{6}+C$.</p>` },
- { tp: 'parsial', q: R`Rumus integral parsial yang benar adalah ...`, o: [R`$\int u\,dv=uv+\int v\,du$`, R`$\int u\,dv=uv-\int v\,du$`, R`$\int u\,dv=u\,dv-v\,du$`, R`$\int u\,dv=\int u\,du\cdot\int dv$`], a: 1, e: R`<p>Dari $d(uv)=u\,dv+v\,du$ diperoleh $\int u\,dv=uv-\int v\,du$.</p>` },
- { tp: 'parsial', q: R`Pada $\int x\sqrt{x+1}\,dx$, pilihan $u$ dan $dv$ yang tepat adalah ...`, o: [R`$u=x,\ dv=\sqrt{x+1}\,dx$`, R`$u=\sqrt{x+1},\ dv=x\,dx$`, R`$u=x\sqrt{x+1},\ dv=dx$`, R`$u=1,\ dv=x\sqrt{x+1}\,dx$`], a: 0, e: R`<p>$u=x$ turunannya sederhana ($du=dx$), dan $dv=\sqrt{x+1}\,dx$ mudah diintegralkan.</p>` },
- { tp: 'trig', q: R`$\int \sin 2x\,dx=\ldots$`, o: [R`$2\cos 2x+C$`, R`$-\tfrac12\cos 2x+C$`, R`$\tfrac12\cos 2x+C$`, R`$-2\cos 2x+C$`], a: 1, e: R`<p>$\int\sin(ax)\,dx=-\tfrac1a\cos(ax)+C$ dengan $a=2$.</p>` },
- { tp: 'trig', q: R`$\int \sin^2x\cos x\,dx=\ldots$`, o: [R`$\sin^3x+C$`, R`$\tfrac13\cos^3x+C$`, R`$-\tfrac13\sin^3x+C$`, R`$\tfrac13\sin^3x+C$`], a: 3, e: R`<p>Misal $u=\sin x$, $du=\cos x\,dx$. Maka $\int u^2du=\tfrac13u^3+C$.</p>` },
- { tp: 'trig', q: R`$\int_0^{\pi}\cos x\,dx=\ldots$`, o: [R`$1$`, R`$2$`, R`$0$`, R`$-1$`], a: 2, e: R`<p>$\big[\sin x\big]_0^\pi=\sin\pi-\sin 0=0$.</p>` },
- { tp: 'tentu', q: R`$\int_1^3 (2x+1)\,dx=\ldots$`, o: [R`$8$`, R`$10$`, R`$12$`, R`$14$`], a: 1, e: R`<p>$\big[x^2+x\big]_1^3=(9+3)-(1+1)=10$.</p>` },
- { tp: 'tentu', q: R`Jika $\int_a^b f(x)\,dx=6$, maka $\int_b^a f(x)\,dx=\ldots$`, o: [R`$6$`, R`$0$`, R`$-6$`, R`$\tfrac16$`], a: 2, e: R`<p>Menukar batas integral mengubah tanda: $\int_b^a f\,dx=-\int_a^b f\,dx=-6$.</p>` },
- { tp: 'luas', q: R`Luas daerah di bawah kurva $y=x^2$ pada interval $[0,3]$ adalah ...`, o: [R`$3$`, R`$9$`, R`$27$`, R`$\tfrac92$`], a: 1, e: R`<p>$L=\int_0^3x^2dx=\Big[\tfrac{x^3}{3}\Big]_0^3=9$.</p>` },
- { tp: 'luas', q: R`Luas daerah antara kurva atas $y=f(x)$ dan kurva bawah $y=g(x)$ pada $[a,b]$ dihitung dengan ...`, o: [R`$\int_a^b (g-f)\,dx$`, R`$\int_a^b (f+g)\,dx$`, R`$\int_a^b (f-g)\,dx$`, R`$\pi\int_a^b (f-g)^2dx$`], a: 2, e: R`<p>Luas = integral dari (kurva atas dikurangi kurva bawah).</p>` },
- { tp: 'volume', q: R`Volume benda putar dari $y=f(x)$ pada $[a,b]$ yang diputar $360^\circ$ mengelilingi sumbu-$x$ adalah ...`, o: [R`$\pi\int_a^b f(x)\,dx$`, R`$\pi\int_a^b [f(x)]^2dx$`, R`$2\pi\int_a^b f(x)\,dx$`, R`$\int_a^b [f(x)]^2dx$`], a: 1, e: R`<p>Metode cakram: jari-jari $f(x)$, luas cakram $\pi[f(x)]^2$.</p>` },
- { tp: 'volume', q: R`Daerah di bawah $y=x$ pada $[0,3]$ diputar $360^\circ$ mengelilingi sumbu-$x$. Volumenya adalah ...`, o: [R`$27\pi$`, R`$\tfrac92\pi$`, R`$3\pi$`, R`$9\pi$`], a: 3, e: R`<p>$V=\pi\int_0^3x^2dx=\pi\cdot\tfrac{27}{3}=9\pi$.</p>` }
-];
 var kz = { list: [], i: 0, score: 0, done: false };
 function kzStart() {
   var tp = document.getElementById('kzTopic').value;
-  var l = KUIS.filter(function (q) { return tp === 'semua' || q.tp === tp; }), i, j, t;
+  var l = TPL.filter(function (t) { return tp === 'semua' || t[0] === tp; }).map(genInst), i, j, t;
   for (i = l.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = l[i]; l[i] = l[j]; l[j] = t; }
   kz = { list: l, i: 0, score: 0, done: false };
   kzRender();
@@ -1383,7 +1671,7 @@ function kzRender() {
       (pct >= 80 ? 'Hebat! Pemahamanmu sudah kuat.' : pct >= 60 ? 'Cukup baik. Ulangi materi yang masih keliru lewat Modul Ajar.' : 'Ayo pelajari lagi Modul Ajar dan Slide, lalu coba kuis ini kembali.') + '</p><button class="btn btn-teal mt-3" onclick="kzStart()">Ulangi Kuis</button>';
     return;
   }
-  var q = kz.list[kz.i], L = ['A', 'B', 'C', 'D'];
+  var q = kz.list[kz.i], L = ['A', 'B', 'C', 'D', 'E'];
   kz.done = false;
   box.innerHTML = '<div class="flex flex-wrap items-center gap-2 mb-2"><span class="font-bold">Soal ' + (kz.i + 1) + ' dari ' + kz.list.length + '</span><span class="tchip">' + TLABEL[q.tp] + '</span><span class="ml-auto text-sm text-slate-600">Skor: ' + kz.score + '</span></div>' +
     '<p class="mb-3">' + q.q + '</p><div class="space-y-2">' +
@@ -1399,7 +1687,7 @@ function kzPick(k) {
     if (bk === q.a) b.classList.add('ok'); else if (bk === k) b.classList.add('bad');
   });
   var fb = document.getElementById('kzFb');
-  fb.innerHTML = '<div class="card ' + (ok ? 'c-ok' : 'c-bad') + '"><h4>' + (ok ? 'Benar!' : 'Belum tepat') + '</h4>' + q.e + '</div><button class="btn mt-2" onclick="kzNext()">' + (kz.i === kz.list.length - 1 ? 'Lihat Hasil' : 'Soal Berikutnya') + '</button>';
+  fb.innerHTML = '<div class="card ' + (ok ? 'c-ok' : 'c-bad') + '"><h4>' + (ok ? 'Benar!' : 'Belum tepat. Jawaban yang benar: ' + ['A', 'B', 'C', 'D', 'E'][q.a]) + '</h4>' + q.e + '</div><button class="btn mt-2" onclick="kzNext()">' + (kz.i === kz.list.length - 1 ? 'Lihat Hasil' : 'Soal Berikutnya') + '</button>';
   typeset(fb);
 }
 function kzNext() { kz.i++; kzRender(); }
@@ -1439,16 +1727,18 @@ function buildFilters() {
   renderSoal();
 }
 function renderSoal() {
-  var html = '', shown = 0;
-  SOAL.forEach(function (s, i) {
+  if (!INST.length) regenAll();
+  var html = '', shown = 0, L = ['A', 'B', 'C', 'D', 'E'];
+  INST.forEach(function (s, i) {
     if (filter !== 'semua' && s.lv !== filter) return;
     if (topic !== 'semua' && s.tp !== topic) return;
     shown++;
     html += '<article class="bg-white border border-slate-200 rounded-xl p-5">' +
       '<div class="flex flex-wrap items-center gap-2 mb-2"><h3 class="font-bold text-lg mr-1">Soal ' + (i + 1) + '</h3><span class="badge b-' + s.lv + '">' + LABEL[s.lv] + '</span><span class="tchip">' + TLABEL[s.tp] + '</span></div>' +
       '<p>' + s.q + '</p>' +
-      '<button class="btn mt-3" aria-expanded="false" aria-controls="ans' + i + '" onclick="toggleAns(' + i + ', this)">Lihat Kunci Jawaban &amp; Pembahasan</button>' +
-      '<div class="acc" id="ans' + i + '"><div><div class="card c-contoh mt-3"><h4>Pembahasan</h4>' + s.a + '</div></div></div>' +
+      '<ul class="mt-2 space-y-1" style="list-style:none;padding:0">' + s.o.map(function (x, k) { return '<li><b>' + L[k] + '.</b> ' + x + '</li>'; }).join('') + '</ul>' +
+      '<div class="flex flex-wrap gap-2 mt-3 no-print"><button class="btn" aria-expanded="false" aria-controls="ans' + i + '" onclick="toggleAns(' + i + ', this)">Lihat Kunci Jawaban &amp; Pembahasan</button><button class="btn btn-teal" onclick="newSoal(' + i + ')">Soal Baru</button></div>' +
+      '<div class="acc" id="ans' + i + '"><div><div class="card c-contoh mt-3"><h4>Kunci: ' + L[s.a] + '</h4>' + s.e + '</div></div></div>' +
       '</article>';
   });
   if (!shown) html = '<div class="bg-white border border-slate-200 rounded-xl p-5 text-slate-600">Belum ada soal untuk kombinasi tingkat kesulitan dan materi ini. Coba ubah salah satu filter.</div>';
@@ -1457,6 +1747,7 @@ function renderSoal() {
   box.innerHTML = html;
   typeset(box);
 }
+function newSoal(i) { INST[i] = genInst(TPL[i]); renderSoal(); }
 function toggleAns(i, btn) {
   var a = document.getElementById('ans' + i);
   var open = a.classList.toggle('open');
